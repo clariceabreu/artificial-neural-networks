@@ -125,8 +125,6 @@ public class Model
         firstPerceptronOfOutputLayer.add(0.43F);
         outputLayerWeights.add(firstPerceptronOfOutputLayer);
 
-
-
         this.inputLayer = new Layer(nOfInputPerceptrons, null, new SigmoidFunction());
         this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new SigmoidFunction(), hiddenLayerWeights);
         this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction(), outputLayerWeights);
