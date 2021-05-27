@@ -9,21 +9,19 @@ public class Model
         }
         Model m = new Model(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         m.trainModel();
-
-        List<Float> testData = new ArrayList<>();
-        testData.add(1.0F);
-        testData.add(1.0F);
-        m.testModel(testData);
+        m.testModel();
     }
 
     private final Float alpha = 0.3F;
+
+    private DataSet dataset;
 
     private Layer inputLayer;
     private Layer hiddenLayer;
     private Layer outputLayer;
 
     public Model(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
-        initializeDatasets();
+        dataset = new DataSet("arquivoimaginarioquenaoexiste");
 
         System.out.println("Input (\033[1;93m" + nOfInputPerceptrons + "\033[m):");
         this.inputLayer = new Layer(nOfInputPerceptrons, null, new SigmoidFunction());
@@ -35,16 +33,16 @@ public class Model
 
     public void trainModel() {
         for (int epoca = 0; epoca < 100; epoca++) {
-            for (int i = 0; i < dataSet.size(); i++){
-                feedFoward(this.dataSet.get(i));
-                backPropagation(dataSet.get(i).get(2));
+            for (Vector data : dataset.getTrainSet()){
+                feedFoward(data);
+                backPropagation(data);
                 updateWeights();
             }
         }
     }
 
-    public void testModel(List<Float> inputSignals) {
-        feedFoward(inputSignals);
+    public void testModel() {
+        feedFoward(dataset.getTestSet().get(0));
 
         System.out.print("\033[1mResultados\033[m: ");
         for (Perceptron outputPerceptron : this.outputLayer.getPerceptrons()) {
@@ -53,12 +51,12 @@ public class Model
     }
 
 
-    public void feedFoward(List<Float> inputSignals) {
+    public void feedFoward(Vector data) {
         List<Perceptron> perceptrons = this.inputLayer.getPerceptrons();
 
         //setando os valores de entrada dos neuronios na camada de entrada
         for (int i = 0; i < this.inputLayer.getPerceptrons().size(); i++) {
-            perceptrons.get(i).setOutputSignal(inputSignals.get(i));
+            perceptrons.get(i).setOutputSignal(data.input[i]);
         }
 
         for (Perceptron hiddenPerceptron : this.hiddenLayer.getPerceptrons()) {
@@ -70,11 +68,11 @@ public class Model
         }
     }
 
-    public void backPropagation(Float target) {
+    public void backPropagation(Vector data) {
         for (Perceptron outputPerceptron : this.outputLayer.getPerceptrons()) {
             Float outputSignal = outputPerceptron.getOutputSignal();
             Float inputSignal = outputPerceptron.getInputSignal();
-            Float error = (target - outputSignal)  * outputLayer.derived(inputSignal);
+            Float error = (data.label[0] - outputSignal)  * outputLayer.derived(inputSignal);
             outputPerceptron.calculateNewWeights(error, alpha);
         }
 
@@ -101,38 +99,5 @@ public class Model
         for (Perceptron perceptron : this.hiddenLayer.getPerceptrons()) {
             perceptron.updateWeights();
         }
-    }
-
-    //[entrada, entrada, target]
-    private ArrayList<ArrayList<Float>> dataSet = new ArrayList<ArrayList<Float>>();
-
-    private void initializeDatasets() {
-        ArrayList<Float> firstData = new ArrayList<>();
-        firstData.add(1.0F);
-        firstData.add(1.0F);
-        firstData.add(1.0F);
-
-        dataSet.add(firstData);
-
-        ArrayList<Float> secondData = new ArrayList<>();
-        secondData.add(0.0F);
-        secondData.add(1.0F);
-        secondData.add(0.0F);
-
-        dataSet.add(secondData);
-
-        ArrayList<Float> thirdData = new ArrayList<>();
-        thirdData.add(1.0F);
-        thirdData.add(0.0F);
-        thirdData.add(0.0F);
-
-        dataSet.add(thirdData);
-
-        ArrayList<Float> fourthData = new ArrayList<>();
-        fourthData.add(0.0F);
-        fourthData.add(0.0F);
-        fourthData.add(0.0F);
-
-        dataSet.add(fourthData);
     }
 }
