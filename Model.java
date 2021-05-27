@@ -63,10 +63,12 @@ public class Model
     }
 
     public void backPropagation(Vector data) {
-        for (Perceptron outputPerceptron : this.outputLayer.getPerceptrons()) {
+        List<Perceptron> outputPerceptrons = this.outputLayer.getPerceptrons();
+        for (int i = 0; i < outputPerceptrons.size(); i++) {
+            Perceptron outputPerceptron = outputPerceptrons.get(i);
             Float outputSignal = outputPerceptron.getOutputSignal();
             Float inputSignal = outputPerceptron.getInputSignal();
-            Float error = (data.label[0] - outputSignal)  * outputLayer.derived(inputSignal);
+            Float error = (data.label[i] - outputSignal)  * outputLayer.derived(inputSignal);
             outputPerceptron.calculateNewWeights(error, alpha);
         }
 
