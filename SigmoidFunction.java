@@ -1,4 +1,5 @@
-public class SigmoidFunction implements ActivatorFunction {
+public class SigmoidFunction implements ActivatorFunction
+{
     public SigmoidFunction() { }
 
     @Override

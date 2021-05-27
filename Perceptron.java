@@ -1,23 +1,16 @@
 import java.util.*;
 
-public class Perceptron {
-    //get
+public class Perceptron
+{
     private Float inputSignal;
-
-    //get
     private Float outputSignal;
 
-    //get & set
-    private HashMap<Perceptron, Float> weights;
     private Float biasWeight;
-
-    //get & set
+    private HashMap<Perceptron, Float> weights;
     private HashMap<Perceptron, Float> newWeights;
 
-    //get
-    private Float error;
-
     private Layer layer;
+    private Float error;
 
     //Pesos random
     public Perceptron(List<Perceptron> inputPerceptrons, Layer layer) {
@@ -69,10 +62,6 @@ public class Perceptron {
         this.biasWeight = alpha * error;
     }
 
-    public void setInput(Float value) {
-        this.inputSignal = value;
-    }
-
     public void updateWeights() {
         for (Perceptron perceptron :  weights.keySet()) {
             Float previousWeight = weights.get(perceptron);
@@ -81,16 +70,16 @@ public class Perceptron {
         }
     }
 
-    public Float getOutputSignal() {
-        return this.outputSignal;
-    }
-
     public Float getInputSignal() {
         return this.inputSignal;
     }
 
-    public Float getError() {
-        return this.error;
+    public void setInput(Float value) {
+        this.inputSignal = value;
+    }
+
+    public Float getOutputSignal() {
+        return this.outputSignal;
     }
 
     public void setOutputSignal(Float signal) {
@@ -99,5 +88,9 @@ public class Perceptron {
 
     public HashMap<Perceptron, Float> getWeights() {
         return weights;
+    }
+
+    public Float getError() {
+        return this.error;
     }
 }

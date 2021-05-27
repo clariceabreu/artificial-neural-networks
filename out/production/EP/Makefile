@@ -1,5 +1,5 @@
-SRC=ActivatorFunction.java Layer.java Model.java Perceptron.java SigmoidFunction.java
-OUTPUTS=ActivatorFunction.class Layer.class Model.class Perceptron.class SigmoidFunction.class
+SRC=ActivatorFunction.java DataSet.java Layer.java Model.java Perceptron.java SigmoidFunction.java
+OUTPUTS=ActivatorFunction.class DataSet.class Layer.class Model.class Perceptron.class SigmoidFunction.class
 
 .PHONY: all run clean
 
