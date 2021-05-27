@@ -19,20 +19,32 @@ public class Perceptron {
 
     private Layer layer;
 
-
-    public Perceptron(List<Perceptron> input_perceptrons, Layer layer) {
+    //Pesos random
+    public Perceptron(List<Perceptron> inputPerceptrons, Layer layer) {
         this.layer = layer;
-        this.weights = new HashMap<Perceptron, Float>();
-        this.newWeights = new HashMap<Perceptron, Float>();
+        this.weights = new HashMap<>();
+        this.newWeights = new HashMap<>();
 
         Random r = new Random();
-        for (Perceptron perceptron : input_perceptrons) {
+        for (Perceptron perceptron : inputPerceptrons) {
             Float random = r.nextFloat();
             this.weights.put(perceptron, random);
             System.out.println("\tw: \033[1;93m" + random + "\033[m");
         }
 
         this.biasWeight = r.nextFloat();
+    }
+
+    //Pesos fixos
+    public Perceptron(List<Perceptron> inputPerceptrons, Layer layer, List<Float> weights) {
+        this.layer = layer;
+        this.weights = new HashMap<>();
+        this.newWeights = new HashMap<>();
+
+        for (int i = 0; i < inputPerceptrons.size(); i++) {
+            this.weights.put(inputPerceptrons.get(i), weights.get(i));
+        }
+        this.biasWeight = weights.get(weights.size() - 1);
     }
 
     public void calculateOutput() {
@@ -50,7 +62,7 @@ public class Perceptron {
         this.error = error;
 
         for (Perceptron perceptron : weights.keySet()) {
-            Float weight = alpha * this.error * perceptron.getOutputSignal();
+            Float weight = alpha * error * perceptron.getOutputSignal();
             this.newWeights.put(perceptron, weight);
         }
 

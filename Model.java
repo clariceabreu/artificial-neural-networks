@@ -1,21 +1,6 @@
 import java.util.*;
 
 public class Model {
-    public Model(int nOfInputs, int nOfHiddens, int nOfOutputs) {
-        this.NUMBER_OF_INPUT_PERCEPTRONS = nOfInputs;
-        this.NUMBER_OF_HIDDEN_PERCEPTRONS = nOfHiddens;
-        this.NUMBER_OF_OUTPUT_PERCEPTRONS = nOfOutputs;
-
-        initializeDataset();
-
-        System.out.println("Input (\033[1;93m" + nOfInputs + "\033[m):");
-        this.inputLayer = new Layer(this.NUMBER_OF_INPUT_PERCEPTRONS, null, new SigmoidFunction());
-        System.out.println("Hidden (\033[1;93m" + nOfHiddens + "\033[m):");
-        this.hiddenLayer = new Layer(this.NUMBER_OF_HIDDEN_PERCEPTRONS, this.inputLayer, new SigmoidFunction());
-        System.out.println("Output (\033[1;93m" + nOfOutputs + "\033[m):");
-        this.outputLayer = new Layer(this.NUMBER_OF_OUTPUT_PERCEPTRONS, this.hiddenLayer, new SigmoidFunction());
-    }
-
     private Layer inputLayer;
 
     private Layer hiddenLayer;
@@ -23,33 +8,43 @@ public class Model {
     private Layer outputLayer;
 
     //[entrada, entrada, target]
-    private ArrayList<ArrayList<Float>> dataSet = new ArrayList<ArrayList<Float>>();
+    private ArrayList<ArrayList<Float>> dataSet = new ArrayList<>();
 
     private int NUMBER_OF_INPUT_PERCEPTRONS;
     private int NUMBER_OF_HIDDEN_PERCEPTRONS;
     private int NUMBER_OF_OUTPUT_PERCEPTRONS;
     
-    private final Float alpha = 0.3F;
+    private final Float alpha = 0.01F;
+
+    public Model(int nOfInputs, int nOfHiddens, int nOfOutputs) {
+        this.NUMBER_OF_INPUT_PERCEPTRONS = nOfInputs;
+        this.NUMBER_OF_HIDDEN_PERCEPTRONS = nOfHiddens;
+        this.NUMBER_OF_OUTPUT_PERCEPTRONS = nOfOutputs;
+
+        initializeDataset();
+
+        initializeLayersWithRandomWeights();
+    }
 
     private void initializeDataset() {
         ArrayList<Float> firstData = new ArrayList<>();
         firstData.add(1.0F);
         firstData.add(1.0F);
-        firstData.add(1.0F);
+        firstData.add(0.0F);
 
         dataSet.add(firstData);
 
         ArrayList<Float> secondData = new ArrayList<>();
         secondData.add(0.0F);
         secondData.add(1.0F);
-        secondData.add(0.0F);
+        secondData.add(1.0F);
 
         dataSet.add(secondData);
 
         ArrayList<Float> thirdData = new ArrayList<>();
         thirdData.add(1.0F);
         thirdData.add(0.0F);
-        thirdData.add(0.0F);
+        thirdData.add(1.0F);
 
         dataSet.add(thirdData);
 
@@ -61,6 +56,42 @@ public class Model {
         dataSet.add(fourthData);
     }
 
+    private void initializeLayersWithRandomWeights() {
+        System.out.println("Input (\033[1;93m" + NUMBER_OF_INPUT_PERCEPTRONS + "\033[m):");
+        this.inputLayer = new Layer(this.NUMBER_OF_INPUT_PERCEPTRONS, null, null);
+        System.out.println("Hidden (\033[1;93m" + NUMBER_OF_HIDDEN_PERCEPTRONS + "\033[m):");
+        this.hiddenLayer = new Layer(this.NUMBER_OF_HIDDEN_PERCEPTRONS, this.inputLayer, new ReLuFunction());
+        System.out.println("Output (\033[1;93m" + NUMBER_OF_OUTPUT_PERCEPTRONS + "\033[m):");
+        this.outputLayer = new Layer(this.NUMBER_OF_OUTPUT_PERCEPTRONS, this.hiddenLayer, new SigmoidFunction());
+    }
+
+    private void initializeLayersWithFixedWeights() {
+        ArrayList<ArrayList<Float>> hiddenLayerWeights = new ArrayList<>();
+        ArrayList<Float> firstPerceptronOfHiddenLayer = new ArrayList<>();
+        firstPerceptronOfHiddenLayer.add(0.53F);
+        firstPerceptronOfHiddenLayer.add(0.97F);
+        firstPerceptronOfHiddenLayer.add(0.43F);
+        ArrayList<Float> secondPerceptronOfHiddenLayer = new ArrayList<>();
+        secondPerceptronOfHiddenLayer.add(0.28F);
+        secondPerceptronOfHiddenLayer.add(0.16F);
+        secondPerceptronOfHiddenLayer.add(0.62F);
+        hiddenLayerWeights.add(firstPerceptronOfHiddenLayer);
+        hiddenLayerWeights.add(secondPerceptronOfHiddenLayer);
+
+        ArrayList<ArrayList<Float>> outputLayerWeights = new ArrayList<>();
+        ArrayList<Float> firstPerceptronOfOutputLayer = new ArrayList<>();
+        firstPerceptronOfOutputLayer.add(0.17F);
+        firstPerceptronOfOutputLayer.add(0.24F);
+        firstPerceptronOfOutputLayer.add(0.43F);
+        outputLayerWeights.add(firstPerceptronOfOutputLayer);
+
+
+
+        this.inputLayer = new Layer(this.NUMBER_OF_INPUT_PERCEPTRONS, null, new SigmoidFunction());
+        this.hiddenLayer = new Layer(this.NUMBER_OF_HIDDEN_PERCEPTRONS, this.inputLayer, new SigmoidFunction(), hiddenLayerWeights);
+        this.outputLayer = new Layer(this.NUMBER_OF_OUTPUT_PERCEPTRONS, this.hiddenLayer, new SigmoidFunction(), outputLayerWeights);
+    }
+
     public static void main(String[] args) {
         if (args.length != 3) {
             System.out.println("Fez bosta"); //TODO: trocar (acho que a Sara n vai gostar)
@@ -70,8 +101,8 @@ public class Model {
         m.trainModel();
         
         List<Float> testData = new ArrayList<>();
-        testData.add(1.0F);
-        testData.add(1.0F);
+        testData.add(0.0F);
+        testData.add(0.0F);
         m.testModel(testData);
     }
 
@@ -97,7 +128,6 @@ public class Model {
 
     public void feedFoward(List<Float> inputSignals) {
         List<Perceptron> perceptrons = this.inputLayer.getPerceptrons();
-
         //setando os valores de entrada dos neuronios na camada de entrada
         for (int i = 0; i < this.NUMBER_OF_INPUT_PERCEPTRONS; i++) {
             perceptrons.get(i).setOutputSignal(inputSignals.get(i));

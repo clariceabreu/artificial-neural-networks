@@ -4,14 +4,9 @@ public class Layer {
     //get
     private List<Perceptron> perceptrons;
 
-    //get
-    private Layer previousLayer;
-
-    //get & set
-    private Layer nextLayer;
-
     private ActivatorFunction function;
 
+    //Pesos random
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function) {
         this.perceptrons = new ArrayList<>();
         this.function = function;
@@ -24,6 +19,24 @@ public class Layer {
             }
 
             Perceptron perceptron = new Perceptron(perceptronsFromPreviousLayer, this);
+
+            this.perceptrons.add(perceptron);
+        }
+    }
+
+    //Pesos fixos
+    public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function, ArrayList<ArrayList<Float>> weights) {
+        this.perceptrons = new ArrayList<>();
+        this.function = function;
+
+        for (int i = 0; i < numberOfPerceptrons; i++) {
+            List<Perceptron> perceptronsFromPreviousLayer = new ArrayList<>();
+
+            if (previousLayer != null) {
+                perceptronsFromPreviousLayer = previousLayer.getPerceptrons();
+            }
+
+            Perceptron perceptron = new Perceptron(perceptronsFromPreviousLayer, this, weights.get(i));
 
             this.perceptrons.add(perceptron);
         }
