@@ -88,7 +88,7 @@ public class Model {
     public void testModel(List<Float> inputSignals) {
         feedFoward(inputSignals);
 
-        System.out.print"\033[1mResultados\033[m: ");
+        System.out.print("\033[1mResultados\033[m: ");
         for (Perceptron outputPerceptron : this.outputLayer.getPerceptrons()) {
             System.out.println("\033[1;92m" + outputPerceptron.getOutputSignal() + "\033[m");
         }
@@ -121,14 +121,14 @@ public class Model {
         }
 
         for (Perceptron hiddenPerceptron : this.hiddenLayer.getPerceptrons()) {
-            Float errorIn = 0.0f;
+            Float errorIn = 0.0F;
             
             for (Perceptron outputPerceptron : this.outputLayer.getPerceptrons()) {
                 Float weight = outputPerceptron.getWeights().get(hiddenPerceptron);
-                errorIn += weight * outputPerceptron.getError(); //FIXME: n sei de ta certo
+                errorIn += weight * outputPerceptron.getError();
             }
 
-            Float error = errorIn * hiddenLayer.derived(hiddenPerceptron.getOutputSignal());
+            Float error = errorIn * hiddenLayer.derived(hiddenPerceptron.getInputSignal());
 
             hiddenPerceptron.calculateNewWeights(error, alpha);
         }
