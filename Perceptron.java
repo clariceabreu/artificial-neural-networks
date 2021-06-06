@@ -48,7 +48,7 @@ public class Perceptron
             this.inputSignal += perceptron.getOutputSignal() * weight;
         }
 
-        this.outputSignal = this.layer.function.activate(this.inputSignal);
+        this.outputSignal = this.layer.getFunction().activate(this.inputSignal);
     }
 
     public void calculateNewWeights(Float error, Float alpha) {
@@ -74,10 +74,6 @@ public class Perceptron
         return this.inputSignal;
     }
 
-    public void setInput(Float value) {
-        this.inputSignal = value;
-    }
-
     public Float getOutputSignal() {
         return this.outputSignal;
     }
@@ -87,7 +83,7 @@ public class Perceptron
     }
 
     public HashMap<Perceptron, Float> getWeights() {
-        return weights;
+        return this.weights;
     }
 
     public Float getError() {

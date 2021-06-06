@@ -3,12 +3,14 @@ import java.util.*;
 public class Layer
 {
     private List<Perceptron> perceptrons;
-    public ActivatorFunction function;
+    private ActivatorFunction function;
+    private Layer previousLayer;
 
     //Pesos random
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function) {
         this.perceptrons = new ArrayList<>();
         this.function = function;
+        this.previousLayer = previousLayer;
 
         for (int i = 0; i < numberOfPerceptrons; i++) {
             List<Perceptron> perceptronsFromPreviousLayer = new ArrayList<>();
@@ -41,13 +43,13 @@ public class Layer
         }
     }
 
-    public void setData(float[] data) {
+    public void setOutput(float[] data) {
         for (int i = 0; i < perceptrons.size(); i++) {
             perceptrons.get(i).setOutputSignal(data[i]);
         }
     }
 
-    public void calculateData() {
+    public void calculateOutput() {
         for (Perceptron p : perceptrons) {
             p.calculateOutput();
         }
@@ -69,11 +71,11 @@ public class Layer
         }
     }
 
-    public void calculateErrors(float alpha, Layer lastLayer) {
+    public void calculateErrors(float alpha) {
         for (Perceptron p : perceptrons) {
             Float errorIn = 0.0F;
 
-            for (Perceptron op : lastLayer.getPerceptrons()) {
+            for (Perceptron op : this.previousLayer.getPerceptrons()) {
                 Float weight = op.getWeights().get(p);
                 errorIn += weight * op.getError();
             }
@@ -85,6 +87,10 @@ public class Layer
     }
 
     public List<Perceptron> getPerceptrons() {
-        return perceptrons;
+        return this.perceptrons;
+    }
+
+    public ActivatorFunction getFunction() {
+        return this.function;
     }
 }

@@ -48,21 +48,19 @@ public class Model
     }
 
     public void feedFoward(Vector data) {
-        List<Perceptron> perceptrons = this.inputLayer.getPerceptrons();
-        //setando os valores de entrada dos neuronios na camada de entrada
-        this.inputLayer.setData(data.input);
-        this.hiddenLayer.calculateData();
-        this.outputLayer.calculateData();
+        this.inputLayer.setOutput(data.input);
+        this.hiddenLayer.calculateOutput();
+        this.outputLayer.calculateOutput();
     }
 
     public void backPropagation(Vector data) {
         this.outputLayer.calculateErrorsFromLabel(alpha, data.label);
-        this.hiddenLayer.calculateErrors(alpha, outputLayer);
+        this.hiddenLayer.calculateErrors(alpha);
     }
 
     public void updateWeights() {
-        outputLayer.updateWeights();
-        hiddenLayer.updateWeights();
+        this.outputLayer.updateWeights();
+        this.hiddenLayer.updateWeights();
     }
 
     private void initializeLayersWithRandomWeights(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
