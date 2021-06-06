@@ -3,7 +3,7 @@ import java.util.*;
 public class Layer
 {
     private List<Perceptron> perceptrons;
-    private ActivatorFunction function;
+    public ActivatorFunction function;
 
     //Pesos random
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function) {
@@ -41,12 +41,47 @@ public class Layer
         }
     }
 
-    public Float activate(Float signal) {
-        return this.function.activate(signal);
+    public void setData(float[] data) {
+        for (int i = 0; i < perceptrons.size(); i++) {
+            perceptrons.get(i).setOutputSignal(data[i]);
+        }
     }
 
-    public Float derived(Float signal) {
-        return this.function.derived(signal);
+    public void calculateData() {
+        for (Perceptron p : perceptrons) {
+            p.calculateOutput();
+        }
+    }
+
+    public void updateWeights() {
+        for (Perceptron p : perceptrons) {
+            p.updateWeights();
+        }
+    }
+
+    public void calculateErrorsFromLabel(float alpha, float[] label) {
+        for (int i = 0; i < perceptrons.size(); i++) {
+            Perceptron outputPerceptron = perceptrons.get(i);
+            Float outputSignal = outputPerceptron.getOutputSignal();
+            Float inputSignal = outputPerceptron.getInputSignal();
+            Float error = (label[i] - outputSignal)  * function.derived(inputSignal);
+            outputPerceptron.calculateNewWeights(error, alpha);
+        }
+    }
+
+    public void calculateErrors(float alpha, Layer lastLayer) {
+        for (Perceptron p : perceptrons) {
+            Float errorIn = 0.0F;
+
+            for (Perceptron op : lastLayer.getPerceptrons()) {
+                Float weight = op.getWeights().get(p);
+                errorIn += weight * op.getError();
+            }
+
+            Float error = errorIn * function.derived(p.getInputSignal());
+
+            p.calculateNewWeights(error, alpha);
+        }
     }
 
     public List<Perceptron> getPerceptrons() {
