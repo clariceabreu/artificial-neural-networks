@@ -1,4 +1,9 @@
-import java.util.*;
+package Model.Components;
+
+import Model.ActivationFunctions.ActivatorFunction;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Layer
 {
@@ -63,24 +68,23 @@ public class Layer
 
     public void calculateErrorsFromLabel(float alpha, float[] label) {
         for (int i = 0; i < perceptrons.size(); i++) {
-            Perceptron outputPerceptron = perceptrons.get(i);
-            Float outputSignal = outputPerceptron.getOutputSignal();
-            Float inputSignal = outputPerceptron.getInputSignal();
-            Float error = (label[i] - outputSignal)  * function.derived(inputSignal);
-            outputPerceptron.calculateNewWeights(error, alpha);
+            Float outputSignal = perceptrons.get(i).getOutputSignal();
+            Float inputSignal = perceptrons.get(i).getInputSignal();
+            Float error = (label[i] - outputSignal)  * function.derivative(inputSignal);
+            perceptrons.get(i).calculateNewWeights(error, alpha);
         }
     }
 
-    public void calculateErrors(float alpha) {
+    public void propagateError(float alpha, List<Perceptron> outputPerceptrons) {
         for (Perceptron p : perceptrons) {
             Float errorIn = 0.0F;
 
-            for (Perceptron op : this.previousLayer.getPerceptrons()) {
+            for (Perceptron op : outputPerceptrons) {
                 Float weight = op.getWeights().get(p);
                 errorIn += weight * op.getError();
             }
 
-            Float error = errorIn * function.derived(p.getInputSignal());
+            Float error = errorIn * function.derivative(p.getInputSignal());
 
             p.calculateNewWeights(error, alpha);
         }
@@ -92,5 +96,39 @@ public class Layer
 
     public ActivatorFunction getFunction() {
         return this.function;
+    }
+
+    public void setFunction(ActivatorFunction function) {
+        this.function = function;
+    }
+
+    public void printWeights() {
+        int index = 1;
+        for (Perceptron perceptron : this.perceptrons) {
+            System.out.println("    Input weights for perceptron " + index + ":");
+            for (Float weight : perceptron.getWeights().values()) {
+                System.out.println("        " + weight);
+            }
+            System.out.println("        " + perceptron.getBiasWeight() + " (bias)");
+            index++;
+        }
+    }
+
+    public float getAverageError() {
+        Float errorSum = 0F;
+        for (Perceptron perceptron : this.perceptrons) {
+            errorSum += perceptron.getError();
+        }
+
+        return errorSum / this.perceptrons.size();
+    }
+
+    public List<String> getOutput() {
+        List<String> outputs = new ArrayList<>();
+        for (Perceptron perceptron : this.perceptrons) {
+            outputs.add(perceptron.getOutputSignal().toString());
+        }
+
+        return outputs;
     }
 }

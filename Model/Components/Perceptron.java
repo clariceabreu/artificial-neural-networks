@@ -1,4 +1,8 @@
-import java.util.*;
+package Model.Components;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 public class Perceptron
 {
@@ -6,8 +10,9 @@ public class Perceptron
     private Float outputSignal;
 
     private Float biasWeight;
+    private Float deltaBias;
     private HashMap<Perceptron, Float> weights;
-    private HashMap<Perceptron, Float> newWeights;
+    private HashMap<Perceptron, Float> deltaWeights;
 
     private Layer layer;
     private Float error;
@@ -16,13 +21,12 @@ public class Perceptron
     public Perceptron(List<Perceptron> inputPerceptrons, Layer layer) {
         this.layer = layer;
         this.weights = new HashMap<>();
-        this.newWeights = new HashMap<>();
+        this.deltaWeights = new HashMap<>();
 
         Random r = new Random();
         for (Perceptron perceptron : inputPerceptrons) {
             Float random = r.nextFloat();
             this.weights.put(perceptron, random);
-            System.out.println("\tw: \033[1;93m" + random + "\033[m");
         }
 
         this.biasWeight = r.nextFloat();
@@ -32,7 +36,7 @@ public class Perceptron
     public Perceptron(List<Perceptron> inputPerceptrons, Layer layer, List<Float> weights) {
         this.layer = layer;
         this.weights = new HashMap<>();
-        this.newWeights = new HashMap<>();
+        this.deltaWeights = new HashMap<>();
 
         for (int i = 0; i < inputPerceptrons.size(); i++) {
             this.weights.put(inputPerceptrons.get(i), weights.get(i));
@@ -56,18 +60,19 @@ public class Perceptron
 
         for (Perceptron perceptron : weights.keySet()) {
             Float weight = alpha * error * perceptron.getOutputSignal();
-            this.newWeights.put(perceptron, weight);
+            this.deltaWeights.put(perceptron, weight);
         }
 
-        this.biasWeight = alpha * error;
+        this.deltaBias = alpha * error;
     }
 
     public void updateWeights() {
         for (Perceptron perceptron :  weights.keySet()) {
-            Float previousWeight = weights.get(perceptron);
-            Float newWeight = newWeights.get(perceptron);
-            this.weights.put(perceptron, previousWeight + newWeight);
+            Float oldWeight = weights.get(perceptron);
+            Float deltaWeight = deltaWeights.get(perceptron);
+            this.weights.put(perceptron, oldWeight + deltaWeight);
         }
+        this.biasWeight = this.biasWeight + this.deltaBias;
     }
 
     public Float getInputSignal() {
@@ -88,5 +93,9 @@ public class Perceptron
 
     public Float getError() {
         return this.error;
+    }
+
+    public Float getBiasWeight() {
+        return this.biasWeight;
     }
 }
