@@ -1,0 +1,144 @@
+-------------------------------Test #1-------------------------------
+Number of hidden perceptrons: 5
+Hidden layer activator function: ReLu
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009829426
+Time in ms: 11
+
+-------------------------------Test #2-------------------------------
+Number of hidden perceptrons: 6
+Hidden layer activator function: ReLu
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009806048
+Time in ms: 6
+
+-------------------------------Test #3-------------------------------
+Number of hidden perceptrons: 7
+Hidden layer activator function: ReLu
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009785101
+Time in ms: 10
+
+-------------------------------Test #4-------------------------------
+Number of hidden perceptrons: 8
+Hidden layer activator function: ReLu
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009793959
+Time in ms: 3
+
+-------------------------------Test #5-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: ReLu
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009850132
+Time in ms: 4
+
+-------------------------------Test #6-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: ReLu
+Output layer activator function: ReLu
+Alpha: 0.2
+Final mean square error: 0.125
+Time in ms: 241
+
+-------------------------------Test #7-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: ReLu
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009841647
+Time in ms: 1
+
+-------------------------------Test #8-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: ReLu
+Alpha: 0.2
+Final mean square error: 0.008281119
+Time in ms: 2
+
+-------------------------------Test #9-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009978646
+Time in ms: 23
+
+-------------------------------Test #10-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.1
+Final mean square error: 0.009975553
+Time in ms: 30
+
+-------------------------------Test #11-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.2
+Final mean square error: 0.009996429
+Time in ms: 12
+
+-------------------------------Test #12-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.3
+Final mean square error: 0.009960987
+Time in ms: 9
+
+-------------------------------Test #13-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.4
+Final mean square error: 0.009956439
+Time in ms: 7
+
+-------------------------------Test #14-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.5
+Final mean square error: 0.009995998
+Time in ms: 4
+
+-------------------------------Test #15-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.6
+Final mean square error: 0.00987632
+Time in ms: 4
+
+-------------------------------Test #16-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.70000005
+Final mean square error: 0.009927609
+Time in ms: 3
+
+-------------------------------Test #17-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.8000001
+Final mean square error: 0.009904901
+Time in ms: 2
+
+-------------------------------Test #18-------------------------------
+Number of hidden perceptrons: 9
+Hidden layer activator function: Sigmoid
+Output layer activator function: Sigmoid
+Alpha: 0.9000001
+Final mean square error: 0.009674974
+Time in ms: 2
+

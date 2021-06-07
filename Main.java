@@ -10,7 +10,6 @@ public class Main {
     private static int nOfInputPerceptrons;
     private static int nOfOutputPerceptrons;
 
-
     public static void main(String[] args) {
         if (args.length != 2) {
             throw new IllegalArgumentException("Dataset path and label length should be indicated");
@@ -26,12 +25,13 @@ public class Main {
         Output output = new Output();
 
         Model model = new Model(dataset, output);
+
+        testNumberOfHiddenPerceptrons(model, output);
+        testActivationFunctions(model, output);
+        testAlpha(model, output);
+
         model.trainModel();
         model.testModel();
-
-        //testNumberOfHiddenPerceptrons(model, output);
-        //testActivationFunctions(model, output);
-        //testAlpha(model, output);
 
         output.generateOutputFiles();
     }
@@ -79,8 +79,9 @@ public class Main {
     private static void testModel(Model model, Output output) {
         output.printTestNumber(testIndex);
         model.randomizePerceptronsWeights();
-        model.trainModel();
+        long time = model.trainModel();
         model.testModel();
+        output.printTestSummary(model.getHiddenLayer(), model.getOutputLayer(), model.getAlpha(), time);
         testIndex++;
     }
 }

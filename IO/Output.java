@@ -4,6 +4,7 @@ import Model.Components.Layer;
 import Model.Components.Perceptron;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Output {
@@ -11,6 +12,9 @@ public class Output {
     private PrintWriter trainOutput;
     private PrintWriter testOutput;
     private PrintWriter errorsOutput;
+    private PrintWriter testSummaryOutput;
+
+    private List<PrintWriter> allFiles;
 
     public Output() {
         try {
@@ -18,10 +22,18 @@ public class Output {
             this.trainOutput = new PrintWriter("outputs/train_model.txt", "UTF-8");
             this.testOutput = new PrintWriter("outputs/test_model.txt", "UTF-8");
             this.errorsOutput = new PrintWriter("outputs/errors.txt", "UTF-8");
+            this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
         } catch (IOException e) {
             System.out.println("An error occurred while creating output files");
             e.printStackTrace();
         }
+
+        allFiles = new ArrayList<>();
+        allFiles.add(initialParamsOutput);
+        allFiles.add(trainOutput);
+        allFiles.add(testOutput);
+        allFiles.add(errorsOutput);
+        allFiles.add(testSummaryOutput);
     }
 
     public void printInitialParams(Layer inputLayer, Layer hiddenLayer, Layer outputLayer, Float alpha) {
@@ -48,9 +60,8 @@ public class Output {
 
         this.trainOutput.println("Mean square error: " + error);
         this.trainOutput.println();
-    }
 
-    public void printError(Float error) {
+        //Prints only the error in a separated file
         this.errorsOutput.println(error);
     }
 
@@ -75,19 +86,21 @@ public class Output {
         this.testOutput.println();
     }
 
-    public void printTestNumber(int index) {
-        this.initialParamsOutput.println("-------------------------------Test #" + index + "-------------------------------");
-        this.trainOutput.println("-------------------------------Test #" + index + "-------------------------------");
-        this.errorsOutput.println("-------------------------------Test #" + index + "-------------------------------");
-        this.testOutput.println("-------------------------------Test #" + index + "-------------------------------");
+    public void printTestSummary(Layer hiddenLayer, Layer outputLayer, Float alpha, long time) {
+        this.testSummaryOutput.println("Number of hidden perceptrons: " + hiddenLayer.getPerceptrons().size());
+        this.testSummaryOutput.println("Hidden layer activator function: " + hiddenLayer.getFunction().getFunctionName());
+        this.testSummaryOutput.println("Output layer activator function: " + outputLayer.getFunction().getFunctionName());
+        this.testSummaryOutput.println("Alpha: " + alpha);
+        this.testSummaryOutput.println("Final mean square error: " + outputLayer.getMeanSquareError());
+        this.testSummaryOutput.println("Time in ms: " + time);
+        this.testSummaryOutput.println();
     }
 
-    public void generateOutputFiles() {
-        this.initialParamsOutput.close();
-        this.trainOutput.close();
-        this.errorsOutput.close();
-        this.testOutput.close();
+    public void printTestNumber(int testNumber) {
+        allFiles.forEach(file -> file.println("-------------------------------Test #" + testNumber + "-------------------------------"));
     }
+
+    public void generateOutputFiles() { allFiles.forEach(PrintWriter::close); }
 
     private void printWeights(List<Perceptron> perceptrons, PrintWriter out, String layer) {
         for (int i = 0; i < perceptrons.size(); i++) {

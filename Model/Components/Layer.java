@@ -11,6 +11,7 @@ public class Layer
 {
     private List<Perceptron> perceptrons;
     private ActivatorFunction function;
+    private List<Float> instantErrors;
 
     //Instantiates all the perceptrons of the layer using random weights
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function) {
@@ -55,7 +56,7 @@ public class Layer
         }
     }
 
-    //Calls calculateOutput() from all perceptrons of the layer
+    //Calls calculateOutput() from all perceptrons dataIndexof the layer
     public void calculateOutput() { this.perceptrons.forEach(Perceptron::calculateOutput); }
 
     //Calls updateWeights() from all perceptrons of the layer
@@ -95,7 +96,9 @@ public class Layer
 
     //Calculate instant error
     //E{n} = 1/2 * Σ(target - output)²
-    public Float getInstantError(DataVector data) {
+    public void calculateInstantError(DataVector data, int dataIndex) {
+        if (dataIndex == 0) instantErrors = new ArrayList<>();
+
         Float errorSum = 0.0F;
         for (int i = 0; i < data.getLabel().length; i++) {
             Float target = data.getLabel()[i];
@@ -103,15 +106,13 @@ public class Layer
             errorSum += (target - output) * (target - output);
         }
 
-        return 0.5F * errorSum;
+        Float instantError = 0.5F * errorSum;
+        instantErrors.add(instantError);
     }
 
     //Calculate mean error: E{av} = 1/N * Σ E{n}
     //Where n = 1 .. N / N = number of entries in the dataset
-    public Float getMeanSquareError(List<Float> instantErrors) {
-        //When there are no instant errors it means that none epochs has passed therefore the error is maximum
-        if (instantErrors.size() == 0) return 1F;
-
+    public Float getMeanSquareError() {
         Float errorSum = 0.0F;
         for (Float error : instantErrors) {
             errorSum += error;

@@ -33,25 +33,30 @@ public class Model {
         this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction());
     }
 
-    public void trainModel() {
+    public long trainModel() {
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
+        long startTime = System.currentTimeMillis();
 
-        List<Float> instantErrors = new ArrayList<>();
         int epoch = 1;
+        Float meanError = 1F;
 
-        while (epoch < maxEpochs && outputLayer.getMeanSquareError(instantErrors) > 0.01F) {
-            for (DataVector data : dataset.getTrainSet()){
+        while (epoch < maxEpochs && meanError > 0.01F) {
+            for (int i = 0; i < dataset.getTrainSet().size(); i++) {
+                DataVector data = dataset.getTrainSet().get(i);
                 feedFoward(data);
                 backPropagation(data);
                 updateWeights();
-                instantErrors.add(outputLayer.getInstantError(data));
+                outputLayer.calculateInstantError(data, i);
             }
 
-            Float meanError = outputLayer.getMeanSquareError(instantErrors);
+            meanError = outputLayer.getMeanSquareError();
             output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
-            output.printError(meanError);
             epoch++;
         }
+
+        long duration = System.currentTimeMillis() - startTime;
+
+        return duration;
     }
 
     public void testModel() {
@@ -88,6 +93,8 @@ public class Model {
     public void setOutputLayer(Layer outputLayer) { this.outputLayer = outputLayer; }
 
     public void setAlpha(Float alpha) { this.alpha = alpha; }
+
+    public Float getAlpha() { return alpha; }
 
     public void randomizePerceptronsWeights() {
         this.hiddenLayer.randomizePerceptronsWeights();
