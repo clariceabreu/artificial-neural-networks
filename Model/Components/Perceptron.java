@@ -25,7 +25,7 @@ public class Perceptron
 
         Random r = new Random();
         for (Perceptron perceptron : inputPerceptrons) {
-            Float random = r.nextFloat();
+            Float random = r.nextFloat() - 0.5F;
             this.weights.put(perceptron, random);
         }
 

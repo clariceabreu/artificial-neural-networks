@@ -3,6 +3,7 @@ package IO;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class Dataset {
@@ -44,10 +45,12 @@ public class Dataset {
     }
 
     public List<DataVector> getTestSet() {
+        Collections.shuffle(vectors);
         return vectors;
     }
 
     public List<DataVector> getTrainSet() {
+        Collections.shuffle(vectors);
         return vectors;
     }
 

@@ -1,15 +1,17 @@
-SRC=ActivatorFunction.java DataSet.java Layer.java Model.java Perceptron.java SigmoidFunction.java Main.java
-OUTPUTS=ActivatorFunction.class DataSet.class Layer.class Model.class Perceptron.class SigmoidFunction.class Main.class
+SOURCES=IO/DataVector.java IO/Dataset.java IO/Output.java Main.java Model/ActivationFunctions/ActivatorFunction.java Model/ActivationFunctions/ReLuFunction.java Model/ActivationFunctions/SigmoidFunction.java Model/Components/Layer.java Model/Components/Perceptron.java Model/Model.java
 
-.PHONY: all run clean
+.PHONY: all run plot clean
 
-all: $(OUTPUTS)
+all: Main.class
 
-%.class: %.java
-	javac $<
+Main.class: $(SOURCES)
+	javac $^
 
-run:
-	java Main Datasets/dataset_AND.csv 1
+run: Main.class
+	java Main datasets/dataset_XOR.csv 1
+
+plot: run
+	gnuplot --persist -e 'plot "outputs/errors.txt" with lines'
 
 clean:
-	rm -f *.class
+	find -name *.class -exec rm {} \;

@@ -26,9 +26,9 @@ public class Main {
 
         Model model = new Model(dataset, output);
 
-        testNumberOfHiddenPerceptrons(model, output);
-        testActivationFunctions(model, output);
-        testAlpha(model, output);
+        // testNumberOfHiddenPerceptrons(model, output);
+        // testActivationFunctions(model, output);
+        // testAlpha(model, output);
 
         model.trainModel();
         model.testModel();
@@ -37,7 +37,7 @@ public class Main {
     }
 
     public static void testNumberOfHiddenPerceptrons(Model model, Output output) {
-        for (int nOfHiddenPerceptrons = 5; nOfHiddenPerceptrons < 10; nOfHiddenPerceptrons++) {
+        for (int nOfHiddenPerceptrons = 5; nOfHiddenPerceptrons < 63; nOfHiddenPerceptrons++) {
             Layer inputLayer = new Layer(nOfInputPerceptrons, null, null);
             Layer hiddenLayer = new Layer(nOfHiddenPerceptrons, inputLayer, new ReLuFunction());
             Layer outputLayer = new Layer(nOfOutputPerceptrons, hiddenLayer, new SigmoidFunction());

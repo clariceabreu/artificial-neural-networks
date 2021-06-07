@@ -106,7 +106,7 @@ public class Layer
             errorSum += (target - output) * (target - output);
         }
 
-        Float instantError = 0.5F * errorSum;
+        Float instantError = errorSum / 2.0F;
         instantErrors.add(instantError);
     }
 
