@@ -24,7 +24,7 @@ public class Output {
         }
     }
 
-    public void generateInitialParamsOutput(Layer inputLayer, Layer hiddenLayer, Layer outputLayer, Float alpha) {
+    public void printInitialParams(Layer inputLayer, Layer hiddenLayer, Layer outputLayer, Float alpha) {
         this.initialParamsOutput.println("Alpha: " + alpha);
         this.initialParamsOutput.println();
 
@@ -39,9 +39,6 @@ public class Output {
         this.initialParamsOutput.println("Number of perceptrons in the output layer: " + outputLayer.getPerceptrons().size());
         this.initialParamsOutput.println("Activator function in the output layer: " + outputLayer.getFunction().getFunctionName());
         printWeights(outputLayer.getPerceptrons(), this.initialParamsOutput, "output layer");
-        this.initialParamsOutput.println();
-
-        this.initialParamsOutput.close();
     }
 
     public void printTrainStep(Layer hiddenLayer, Layer outputLayer, Float error, int epoch) {
@@ -78,15 +75,17 @@ public class Output {
         this.testOutput.println();
     }
 
-    public void generateTrainOutput() {
+    public void printTestNumber(int index) {
+        this.initialParamsOutput.println("-------------------------------Test #" + index + "-------------------------------");
+        this.trainOutput.println("-------------------------------Test #" + index + "-------------------------------");
+        this.errorsOutput.println("-------------------------------Test #" + index + "-------------------------------");
+        this.testOutput.println("-------------------------------Test #" + index + "-------------------------------");
+    }
+
+    public void generateOutputFiles() {
+        this.initialParamsOutput.close();
         this.trainOutput.close();
-    }
-
-    public void generateErrorOutput() {
         this.errorsOutput.close();
-    }
-
-    public void generateTestOutput() {
         this.testOutput.close();
     }
 

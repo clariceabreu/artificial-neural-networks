@@ -98,4 +98,14 @@ public class Perceptron
     public Float getBiasWeight() {
         return this.biasWeight;
     }
+
+    public void randomizeWeights() {
+        Random r = new Random();
+        for (Perceptron perceptron : this.weights.keySet()) {
+            Float random = r.nextFloat();
+            this.weights.put(perceptron, random);
+        }
+
+        this.biasWeight = r.nextFloat();
+    }
 }

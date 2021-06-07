@@ -18,33 +18,24 @@ public class Model {
     private Layer outputLayer;
 
     private Float alpha = 0.2F;
-    private int nOfHiddenPerceptrons = 2;
+    private final int nOfHiddenPerceptrons = 2;
     private final int maxEpochs = 5000;
 
-    public Model(Dataset dataset) {
+    public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
-        this.output = new Output();
-    }
+        this.output = output;
 
-    public void initializeModel() {
         int nOfInputPerceptrons = dataset.getInputLength();
         int nOfOutputPerceptrons = dataset.getLabelLength();
 
-        if (this.inputLayer == null) {
-            this.inputLayer = new Layer(nOfInputPerceptrons, null, null);
-        }
-        if (this.hiddenLayer == null) {
-            this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new ReLuFunction());
-        }
-
-        if (this.outputLayer == null) {
-            this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction());
-        }
-
-        output.generateInitialParamsOutput(inputLayer, hiddenLayer, outputLayer, alpha);
+        this.inputLayer = new Layer(nOfInputPerceptrons, null, null);
+        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new ReLuFunction());
+        this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction());
     }
 
     public void trainModel() {
+        output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
+
         List<Float> instantErrors = new ArrayList<>();
         int epoch = 1;
 
@@ -61,9 +52,6 @@ public class Model {
             output.printError(meanError);
             epoch++;
         }
-
-        output.generateTrainOutput();
-        output.generateErrorOutput();
     }
 
     public void testModel() {
@@ -71,8 +59,6 @@ public class Model {
             feedFoward(test);
             output.printTestResult(outputLayer, test);
         }
-
-        output.generateTestOutput();
     }
 
     public void feedFoward(DataVector data) {
@@ -91,20 +77,21 @@ public class Model {
         this.hiddenLayer.updateWeights();
     }
 
-    public void setAlpha(Float alpha) {
-        this.alpha = alpha;
-    }
+    public Layer getHiddenLayer() { return hiddenLayer; }
 
-    public void setNumberOfHiddenPerceptrons(int nOfHiddenPerceptrons) {
-        this.nOfHiddenPerceptrons = nOfHiddenPerceptrons;
-    }
+    public Layer getOutputLayer() { return outputLayer; }
 
-    public Layer getHiddenLayer() {
-        return hiddenLayer;
-    }
+    public void setInputLayer(Layer inputLayer) { this.inputLayer = inputLayer; }
 
-    public Layer getOutputLayer() {
-        return outputLayer;
+    public void setHiddenLayer(Layer hiddenLayer) { this.hiddenLayer = hiddenLayer; }
+
+    public void setOutputLayer(Layer outputLayer) { this.outputLayer = outputLayer; }
+
+    public void setAlpha(Float alpha) { this.alpha = alpha; }
+
+    public void randomizePerceptronsWeights() {
+        this.hiddenLayer.randomizePerceptronsWeights();
+        this.outputLayer.randomizePerceptronsWeights();
     }
 
     public void initializeLayersWithFixedWeights(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {

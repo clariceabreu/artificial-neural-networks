@@ -1,16 +1,85 @@
+-------------------------------Test #1-------------------------------
 Inputs: [1.0,-1.0]
 Expected output: [0.0]
-Output: [0.046233043]
+Output: [0.036821872]
 
 Inputs: [-1.0,-1.0]
 Expected output: [0.0]
-Output: [0.046233043]
+Output: [0.012988064]
 
 Inputs: [-1.0,1.0]
 Expected output: [0.0]
-Output: [0.046234958]
+Output: [0.03805476]
 
 Inputs: [1.0,1.0]
 Expected output: [1.0]
-Output: [0.9751105]
+Output: [0.96683407]
+
+-------------------------------Test #2-------------------------------
+Inputs: [1.0,-1.0]
+Expected output: [0.0]
+Output: [0.02290562]
+
+Inputs: [-1.0,-1.0]
+Expected output: [0.0]
+Output: [0.04489792]
+
+Inputs: [-1.0,1.0]
+Expected output: [0.0]
+Output: [0.05090071]
+
+Inputs: [1.0,1.0]
+Expected output: [1.0]
+Output: [0.9734875]
+
+-------------------------------Test #3-------------------------------
+Inputs: [1.0,-1.0]
+Expected output: [0.0]
+Output: [0.05145091]
+
+Inputs: [-1.0,-1.0]
+Expected output: [0.0]
+Output: [0.05528691]
+
+Inputs: [-1.0,1.0]
+Expected output: [0.0]
+Output: [0.04030775]
+
+Inputs: [1.0,1.0]
+Expected output: [1.0]
+Output: [0.96883976]
+
+-------------------------------Test #4-------------------------------
+Inputs: [1.0,-1.0]
+Expected output: [0.0]
+Output: [0.043021724]
+
+Inputs: [-1.0,-1.0]
+Expected output: [0.0]
+Output: [0.045018446]
+
+Inputs: [-1.0,1.0]
+Expected output: [0.0]
+Output: [0.0354603]
+
+Inputs: [1.0,1.0]
+Expected output: [1.0]
+Output: [0.9673807]
+
+-------------------------------Test #5-------------------------------
+Inputs: [1.0,-1.0]
+Expected output: [0.0]
+Output: [0.033517055]
+
+Inputs: [-1.0,-1.0]
+Expected output: [0.0]
+Output: [0.06014991]
+
+Inputs: [-1.0,1.0]
+Expected output: [0.0]
+Output: [0.03912914]
+
+Inputs: [1.0,1.0]
+Expected output: [1.0]
+Output: [0.9738782]
 

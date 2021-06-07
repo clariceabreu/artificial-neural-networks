@@ -5,18 +5,17 @@ import Model.ActivationFunctions.ActivatorFunction;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Layer
 {
     private List<Perceptron> perceptrons;
     private ActivatorFunction function;
-    private Layer previousLayer;
 
-    //Pesos random
+    //Instantiates all the perceptrons of the layer using random weights
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function) {
         this.perceptrons = new ArrayList<>();
         this.function = function;
-        this.previousLayer = previousLayer;
 
         for (int i = 0; i < numberOfPerceptrons; i++) {
             List<Perceptron> perceptronsFromPreviousLayer = new ArrayList<>();
@@ -31,7 +30,7 @@ public class Layer
         }
     }
 
-    //Pesos fixos
+    //Instantiates all the perceptrons of the layer using fixed weights
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function, ArrayList<ArrayList<Float>> weights) {
         this.perceptrons = new ArrayList<>();
         this.function = function;
@@ -49,24 +48,22 @@ public class Layer
         }
     }
 
+    //Sets outputs of the perceptrons using the data from the dataset (this method is only used for input layer)
     public void setOutput(float[] data) {
         for (int i = 0; i < perceptrons.size(); i++) {
             perceptrons.get(i).setOutputSignal(data[i]);
         }
     }
 
-    public void calculateOutput() {
-        for (Perceptron p : perceptrons) {
-            p.calculateOutput();
-        }
-    }
+    //Calls calculateOutput() from all perceptrons of the layer
+    public void calculateOutput() { this.perceptrons.forEach(Perceptron::calculateOutput); }
 
-    public void updateWeights() {
-        for (Perceptron p : perceptrons) {
-            p.updateWeights();
-        }
-    }
+    //Calls updateWeights() from all perceptrons of the layer
+    public void updateWeights() { this.perceptrons.forEach(Perceptron::updateWeights); }
 
+    //Calculates the error using the labels in the dataset.
+    //δ{k} = (target{k} - output{k}) * f'(input{k})
+    //Where k = 1 .. m  / m = number of perceptrons in the output layer
     public void calculateErrorsFromLabel(float alpha, float[] label) {
         for (int i = 0; i < perceptrons.size(); i++) {
             Float outputSignal = perceptrons.get(i).getOutputSignal();
@@ -76,6 +73,11 @@ public class Layer
         }
     }
 
+    //Calculates the error using the errors from the upper layer.
+    //δ_in{j} = Σ δ{k} * weight {j, k}
+    //δ{j} = δ_in{j} * f'(input{j})
+    //Where k = 1 .. m  / m = number of perceptrons in the upper layer
+    //Where j = 1 .. p / p = number of perceptrons in the current layer
     public void propagateError(float alpha, List<Perceptron> outputPerceptrons) {
         for (Perceptron p : perceptrons) {
             Float errorIn = 0.0F;
@@ -91,31 +93,8 @@ public class Layer
         }
     }
 
-    public List<Perceptron> getPerceptrons() {
-        return this.perceptrons;
-    }
-
-    public ActivatorFunction getFunction() {
-        return this.function;
-    }
-
-    public void setFunction(ActivatorFunction function) {
-        this.function = function;
-    }
-
-    public void printWeights() {
-        int index = 1;
-        for (Perceptron perceptron : this.perceptrons) {
-            System.out.println("    Input weights for perceptron " + index + ":");
-            for (Float weight : perceptron.getWeights().values()) {
-                System.out.println("        " + weight);
-            }
-            System.out.println("        " + perceptron.getBiasWeight() + " (bias)");
-            index++;
-        }
-    }
-
-    //Calculate instant error: E{n} = 1/2 * Σ(target - output)²
+    //Calculate instant error
+    //E{n} = 1/2 * Σ(target - output)²
     public Float getInstantError(DataVector data) {
         Float errorSum = 0.0F;
         for (int i = 0; i < data.getLabel().length; i++) {
@@ -128,8 +107,9 @@ public class Layer
     }
 
     //Calculate mean error: E{av} = 1/N * Σ E{n}
+    //Where n = 1 .. N / N = number of entries in the dataset
     public Float getMeanSquareError(List<Float> instantErrors) {
-        //When there are no instant errors it means that none epochs has passed therefore it returns an error of 1
+        //When there are no instant errors it means that none epochs has passed therefore the error is maximum
         if (instantErrors.size() == 0) return 1F;
 
         Float errorSum = 0.0F;
@@ -140,12 +120,24 @@ public class Layer
         return errorSum / instantErrors.size();
     }
 
-    public List<String> getOutput() {
-        List<String> outputs = new ArrayList<>();
-        for (Perceptron perceptron : this.perceptrons) {
-            outputs.add(perceptron.getOutputSignal().toString());
-        }
 
-        return outputs;
+    //Returns a list of the output signals of all the perceptrons (converted to string)
+    public List<String> getOutput() {
+        return this.perceptrons.stream()
+                               .map(Perceptron::getOutputSignal)
+                               .map(signal -> signal.toString())
+                               .collect(Collectors.toList());
     }
+
+    public List<Perceptron> getPerceptrons() {
+        return this.perceptrons;
+    }
+
+    public ActivatorFunction getFunction() {
+        return this.function;
+    }
+
+    public void setFunction(ActivatorFunction function) { this.function = function; }
+
+    public void randomizePerceptronsWeights() { this.perceptrons.forEach(Perceptron::randomizeWeights); }
 }
