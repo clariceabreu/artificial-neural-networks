@@ -40,7 +40,7 @@ public class Model {
         int epoch = 1;
         Float meanError = 1F;
 
-        while (epoch < maxEpochs && meanError > 0.01F) {
+        while (epoch < maxEpochs /* && meanError > 0.01F */) {
             for (int i = 0; i < dataset.getTrainSet().size(); i++) {
                 DataVector data = dataset.getTrainSet().get(i);
                 feedFoward(data);
