@@ -1,0 +1,22 @@
+Alpha: 0.2
+
+Number of perceptrons in the input layer: 2
+
+Number of perceptrons in the hidden layer: 2
+Activator function in the hidden layer: ReLu
+Input weights for perceptron 1 of hidden layer: 0.4306221
+                                                0.628812
+                                                0.5319598 (bias)
+
+Input weights for perceptron 2 of hidden layer: 0.1954493
+                                                0.71643585
+                                                0.3152566 (bias)
+
+
+Number of perceptrons in the output layer: 1
+Activator function in the output layer: Sigmoid
+Input weights for perceptron 1 of output layer: 0.5686556
+                                                0.24049032
+                                                0.66000897 (bias)
+
+

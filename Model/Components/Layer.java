@@ -1,5 +1,6 @@
 package Model.Components;
 
+import IO.DataVector;
 import Model.ActivationFunctions.ActivatorFunction;
 
 import java.util.List;
@@ -114,13 +115,29 @@ public class Layer
         }
     }
 
-    public float getAverageError() {
-        Float errorSum = 0F;
-        for (Perceptron perceptron : this.perceptrons) {
-            errorSum += perceptron.getError();
+    //Calculate instant error: E{n} = 1/2 * Σ(target - output)²
+    public Float getInstantError(DataVector data) {
+        Float errorSum = 0.0F;
+        for (int i = 0; i < data.getLabel().length; i++) {
+            Float target = data.getLabel()[i];
+            Float output = this.perceptrons.get(i).getOutputSignal();
+            errorSum += (target - output) * (target - output);
         }
 
-        return errorSum / this.perceptrons.size();
+        return 0.5F * errorSum;
+    }
+
+    //Calculate mean error: E{av} = 1/N * Σ E{n}
+    public Float getMeanSquareError(List<Float> instantErrors) {
+        //When there are no instant errors it means that none epochs has passed therefore it returns an error of 1
+        if (instantErrors.size() == 0) return 1F;
+
+        Float errorSum = 0.0F;
+        for (Float error : instantErrors) {
+            errorSum += error;
+        }
+
+        return errorSum / instantErrors.size();
     }
 
     public List<String> getOutput() {

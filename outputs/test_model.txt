@@ -1,0 +1,16 @@
+Inputs: [1.0,-1.0]
+Expected output: [0.0]
+Output: [0.046233043]
+
+Inputs: [-1.0,-1.0]
+Expected output: [0.0]
+Output: [0.046233043]
+
+Inputs: [-1.0,1.0]
+Expected output: [0.0]
+Output: [0.046234958]
+
+Inputs: [1.0,1.0]
+Expected output: [1.0]
+Output: [0.9751105]
+

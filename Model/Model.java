@@ -2,27 +2,31 @@ package Model;
 
 import IO.Dataset;
 import IO.DataVector;
+import IO.Output;
 import Model.ActivationFunctions.ReLuFunction;
 import Model.ActivationFunctions.SigmoidFunction;
 import Model.Components.Layer;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Model {
     private Dataset dataset;
+    private Output output;
 
     private Layer inputLayer;
     private Layer hiddenLayer;
     private Layer outputLayer;
 
-    private Float alpha = 0.5F;
-    private int nOfHiddenPerceptrons = 7;
+    private Float alpha = 0.2F;
+    private int nOfHiddenPerceptrons = 2;
+    private final int maxEpochs = 5000;
 
     public Model(Dataset dataset) {
         this.dataset = dataset;
+        this.output = new Output();
     }
 
     public void initializeModel() {
-        System.out.println("-----------------------Initializing Model-----------------------");
         int nOfInputPerceptrons = dataset.getInputLength();
         int nOfOutputPerceptrons = dataset.getLabelLength();
 
@@ -37,27 +41,38 @@ public class Model {
             this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction());
         }
 
-        //printInitialParams(nOfInputPerceptrons, nOfHiddenPerceptrons, nOfOutputPerceptrons);
+        output.generateInitialParamsOutput(inputLayer, hiddenLayer, outputLayer, alpha);
     }
 
     public void trainModel() {
-        System.out.println("-------------------------Training Model-------------------------");
-        for (int epoca = 0; epoca < 100; epoca++) {
+        List<Float> instantErrors = new ArrayList<>();
+        int epoch = 1;
+
+        while (epoch < maxEpochs && outputLayer.getMeanSquareError(instantErrors) > 0.01F) {
             for (DataVector data : dataset.getTrainSet()){
                 feedFoward(data);
                 backPropagation(data);
                 updateWeights();
-                //printTrainingSteps(data);
+                instantErrors.add(outputLayer.getInstantError(data));
             }
+
+            Float meanError = outputLayer.getMeanSquareError(instantErrors);
+            output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
+            output.printError(meanError);
+            epoch++;
         }
+
+        output.generateTrainOutput();
+        output.generateErrorOutput();
     }
 
     public void testModel() {
-        System.out.println("-------------------------Testlabeling Model-------------------------");
         for (DataVector test : dataset.getTestSet()) {
             feedFoward(test);
-            printResult(test);
+            output.printTestResult(outputLayer, test);
         }
+
+        output.generateTestOutput();
     }
 
     public void feedFoward(DataVector data) {
@@ -74,69 +89,6 @@ public class Model {
     public void updateWeights() {
         this.outputLayer.updateWeights();
         this.hiddenLayer.updateWeights();
-    }
-
-    private void printInitialParams(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
-        System.out.println("Number of perceptrons in the input layer: " + nOfInputPerceptrons);
-        System.out.println();
-
-        System.out.println("Number of perceptrons in the hidden layer: " + nOfHiddenPerceptrons);
-        System.out.println("Activator function in the hidden layer: " + this.hiddenLayer.getFunction().getFunctionName());
-        System.out.println("Initial weights from input layer to hidden layer");
-        this.hiddenLayer.printWeights();
-        System.out.println();
-
-        System.out.println("Number of perceptrons in the output layer: " + nOfOutputPerceptrons);
-        System.out.println("Activator function in the output layer: " + this.outputLayer.getFunction().getFunctionName());
-        System.out.println("Initial weights from hidden layer to output layer");
-        this.outputLayer.printWeights();
-        System.out.println();
-
-        System.out.println("Alpha: " + this.alpha);
-        System.out.println();
-    }
-
-    private void printTrainingSteps(DataVector data) {
-        System.out.println("Weights from input layer to hidden layer");
-        this.hiddenLayer.printWeights();
-        System.out.println();
-
-        System.out.println("Weights from hidden layer to output layer");
-        this.outputLayer.printWeights();
-        System.out.println();
-
-        String expectedOutput = "[";
-        for (int i = 0; i < data.getLabel().length; i++) {
-            if (i > 0) expectedOutput += ',';
-            expectedOutput += data.getLabel()[i];
-        }
-        expectedOutput += ']';
-
-        System.out.println("Expected output: " + expectedOutput);
-        System.out.println("Output: [" + String.join(",", this.outputLayer.getOutput()) + "]");
-        System.out.println("Average error in output layer: " + this.outputLayer.getAverageError());
-        System.out.println();
-    }
-
-    private void printResult(DataVector test) {
-        String inputs = "[";
-        for (int i = 0; i < test.getInput().length; i++) {
-            if (i > 0) inputs += ',';
-            inputs += test.getInput()[i];
-        }
-        inputs += ']';
-
-        String outputs = "[";
-        for (int i = 0; i < test.getLabel().length; i++) {
-            if (i > 0) outputs += ',';
-            outputs += test.getLabel()[i];
-        }
-        outputs += ']';
-
-        System.out.println("Inputs: " + inputs);
-        System.out.println("Expected output: " + outputs);
-        System.out.println("Output: [" + String.join(",", this.outputLayer.getOutput()) + "]");
-        System.out.println();
     }
 
     public void setAlpha(Float alpha) {
