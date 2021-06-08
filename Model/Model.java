@@ -20,7 +20,7 @@ public class Model {
 
     private Float alpha = 0.3F;
     private final int nOfHiddenPerceptrons = 2;
-    private final int maxEpochs = 3000;
+    private final int maxEpochs = 5000;
   
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
@@ -63,6 +63,7 @@ public class Model {
             feedFoward(test);
             output.printModelOutput(outputLayer, test);
         }
+        output.printFinalResult();
     }
 
     public void feedFoward(DataVector data) {

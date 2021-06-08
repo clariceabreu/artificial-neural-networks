@@ -10,6 +10,9 @@ Main.class: $(SOURCES)
 run: Main.class
 	java Main datasets/dataset_XOR.csv 1
 
+run-charset: Main.class
+	java Main datasets/dataset_chars_clean.csv 7
+
 plot: run
 	gnuplot --persist -e 'plot "outputs/errors.txt" with lines'
 

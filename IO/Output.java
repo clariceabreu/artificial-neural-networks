@@ -5,6 +5,7 @@ import Model.Components.Perceptron;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Output {
@@ -16,6 +17,9 @@ public class Output {
 
     private List<PrintWriter> allFiles;
 
+    private static int correctResponses = 0;
+    private static int wrongResponses = 0;
+
     public Output() {
         File outputsDir = new File("outputs");
         if (!outputsDir.exists()) {
@@ -24,7 +28,7 @@ public class Output {
         try {
             this.initialParamsOutput = new PrintWriter("outputs/initial_params.txt", "UTF-8");
             this.trainOutput = new PrintWriter("outputs/train_model.txt", "UTF-8");
-            this.modelOutput = new PrintWriter("outputs/test_model.txt", "UTF-8");
+            this.modelOutput = new PrintWriter("outputs/model_output.txt", "UTF-8");
             this.errorsOutput = new PrintWriter("outputs/errors.txt", "UTF-8");
             this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
         } catch (IOException e) {
@@ -70,24 +74,39 @@ public class Output {
     }
 
     public void printModelOutput(Layer outputLayer, DataVector test) {
-        String inputs = "[";
+        int[] inputsArray = new int[test.getInput().length];
         for (int i = 0; i < test.getInput().length; i++) {
-            if (i > 0) inputs += ',';
-            inputs += test.getInput()[i];
+            inputsArray[i] = (int) test.getInput()[i];
         }
-        inputs += ']';
 
-        String outputs = "[";
+        int[] expectedOutputArray = new int[test.getLabel().length];
         for (int i = 0; i < test.getLabel().length; i++) {
-            if (i > 0) outputs += ',';
-            outputs += test.getLabel()[i];
+            expectedOutputArray[i] = Math.round(test.getLabel()[i]);
         }
-        outputs += ']';
 
-        this.modelOutput.println("Inputs: " + inputs);
-        this.modelOutput.println("Expected output: " + outputs);
-        this.modelOutput.println("Output: [" + String.join(",", outputLayer.getOutput()) + "]");
+        String input = Arrays.toString(inputsArray);
+        String expectedOutput = Arrays.toString(expectedOutputArray);
+        String output = Arrays.toString(outputLayer.getOutput());
+
+        this.modelOutput.println("Inputs: " + input);
+        this.modelOutput.println("Expected output: " + expectedOutput);
+        this.modelOutput.println("Output: " + output);
+
+        if(expectedOutput.equals(output)) {
+            correctResponses++;
+            this.modelOutput.println("Correct response ✓");
+        } else {
+            wrongResponses++;
+            this.modelOutput.println("Wrong response ✖");
+        }
+
         this.modelOutput.println();
+    }
+
+    public void printFinalResult() {
+        this.modelOutput.println("---------------------------------------------------------------------------------------------------");
+        this.modelOutput.println("Number of correct responses " + correctResponses + " out of " + (correctResponses + wrongResponses));
+        this.modelOutput.println("---------------------------------------------------------------------------------------------------");
     }
 
     public void printTestSummary(Layer hiddenLayer, Layer outputLayer, Float alpha, long time) {

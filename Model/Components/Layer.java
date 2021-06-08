@@ -119,12 +119,19 @@ public class Layer {
     }
 
 
-    //Returns a list of the output signals of all the perceptrons (converted to string)
-    public List<String> getOutput() {
-        return this.perceptrons.stream()
-                               .map(Perceptron::getOutputSignal)
-                               .map(signal -> signal.toString())
-                               .collect(Collectors.toList());
+    //Returns an array of the output signals of all the perceptrons (converted to int)
+    public String[] getOutput() {
+        String[] output = new String[this.perceptrons.size()];
+
+        for (int i = 0; i < this.perceptrons.size(); i++) {
+            if (this.perceptrons.get(i).getOutputSignal() > 0.9F) {
+                output[i] = "1";
+            } else {
+                output[i] = "0";
+            }
+        }
+
+        return output;
     }
 
     public List<Perceptron> getPerceptrons() { return this.perceptrons; }
