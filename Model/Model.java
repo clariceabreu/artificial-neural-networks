@@ -3,6 +3,7 @@ package Model;
 import IO.Dataset;
 import IO.DataVector;
 import IO.Output;
+import Model.ActivationFunctions.ActivatorFunction;
 import Model.ActivationFunctions.ReLuFunction;
 import Model.ActivationFunctions.SigmoidFunction;
 import Model.Components.Layer;
@@ -20,17 +21,14 @@ public class Model {
     private Float alpha = 0.02F;
     private final int nOfHiddenPerceptrons = 4;
     private final int maxEpochs = 3000;
-
+  
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
         this.output = output;
 
-        int nOfInputPerceptrons = dataset.getInputLength();
-        int nOfOutputPerceptrons = dataset.getLabelLength();
-
-        this.inputLayer = new Layer(nOfInputPerceptrons, null, null);
+        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
         this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new ReLuFunction());
-        this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction());
+        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, new SigmoidFunction());
     }
 
     public long trainModel() {
@@ -39,17 +37,18 @@ public class Model {
 
         int epoch = 1;
         Float meanError = 1F;
+        List<Float> instantErrors = new ArrayList<>();
 
-        while (epoch < maxEpochs /* && meanError > 0.01F */) {
-            for (int i = 0; i < dataset.getTrainSet().size(); i++) {
-                DataVector data = dataset.getTrainSet().get(i);
+        //TO DO: trabalhar melhor a condição de parada
+        while (epoch < maxEpochs && meanError > 0.01F) {
+            for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
                 backPropagation(data);
                 updateWeights();
-                outputLayer.calculateInstantError(data, i);
+                instantErrors.add(outputLayer.calculateInstantError(data));
             }
 
-            meanError = outputLayer.getMeanSquareError();
+            meanError = outputLayer.calculateMeanSquareError(instantErrors);
             output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
             epoch++;
         }
@@ -62,7 +61,7 @@ public class Model {
     public void testModel() {
         for (DataVector test : dataset.getTestSet()) {
             feedFoward(test);
-            output.printTestResult(outputLayer, test);
+            output.printModelOutput(outputLayer, test);
         }
     }
 
@@ -82,11 +81,11 @@ public class Model {
         this.hiddenLayer.updateWeights();
     }
 
-    public Layer getHiddenLayer() { return hiddenLayer; }
+    public Layer getInputLayer() { return this.inputLayer; }
 
-    public Layer getOutputLayer() { return outputLayer; }
+    public Layer getHiddenLayer() { return this.hiddenLayer; }
 
-    public void setInputLayer(Layer inputLayer) { this.inputLayer = inputLayer; }
+    public Layer getOutputLayer() { return this.outputLayer; }
 
     public void setHiddenLayer(Layer hiddenLayer) { this.hiddenLayer = hiddenLayer; }
 
@@ -94,12 +93,13 @@ public class Model {
 
     public void setAlpha(Float alpha) { this.alpha = alpha; }
 
-    public Float getAlpha() { return alpha; }
-
-    public void randomizePerceptronsWeights() {
-        this.hiddenLayer.randomizePerceptronsWeights();
-        this.outputLayer.randomizePerceptronsWeights();
+    public void updateLayers(int nOfHiddenPerceptrons, ActivatorFunction hiddenLayerActivatorFunction, ActivatorFunction outputLayerActivatorFunction) {
+        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
+        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerActivatorFunction);
+        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerActivatorFunction);
     }
+
+    public Float getAlpha() { return alpha; }
 
     public void initializeLayersWithFixedWeights(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
         ArrayList<ArrayList<Float>> hiddenLayerWeights = new ArrayList<>();

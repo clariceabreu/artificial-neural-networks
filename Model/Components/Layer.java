@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class Layer
-{
+public class Layer {
     private List<Perceptron> perceptrons;
     private ActivatorFunction function;
-    private List<Float> instantErrors;
+    private Float meanSquareError;
 
     //Instantiates all the perceptrons of the layer using random weights
     public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function) {
@@ -96,9 +95,7 @@ public class Layer
 
     //Calculate instant error
     //E{n} = 1/2 * Σ(target - output)²
-    public void calculateInstantError(DataVector data, int dataIndex) {
-        if (dataIndex == 0) instantErrors = new ArrayList<>();
-
+    public Float calculateInstantError(DataVector data) {
         Float errorSum = 0.0F;
         for (int i = 0; i < data.getLabel().length; i++) {
             Float target = data.getLabel()[i];
@@ -106,19 +103,19 @@ public class Layer
             errorSum += (target - output) * (target - output);
         }
 
-        Float instantError = errorSum / 2.0F;
-        instantErrors.add(instantError);
+        return  0.5F * errorSum;
     }
 
     //Calculate mean error: E{av} = 1/N * Σ E{n}
     //Where n = 1 .. N / N = number of entries in the dataset
-    public Float getMeanSquareError() {
+    public Float calculateMeanSquareError(List<Float> instantErrors) {
         Float errorSum = 0.0F;
         for (Float error : instantErrors) {
             errorSum += error;
         }
 
-        return errorSum / instantErrors.size();
+        this.meanSquareError = errorSum / instantErrors.size();
+        return this.meanSquareError;
     }
 
 
@@ -130,15 +127,11 @@ public class Layer
                                .collect(Collectors.toList());
     }
 
-    public List<Perceptron> getPerceptrons() {
-        return this.perceptrons;
-    }
+    public List<Perceptron> getPerceptrons() { return this.perceptrons; }
 
-    public ActivatorFunction getFunction() {
-        return this.function;
-    }
+    public ActivatorFunction getFunction() { return this.function; }
+
+    public Float getMeanSquareError() { return this.meanSquareError; }
 
     public void setFunction(ActivatorFunction function) { this.function = function; }
-
-    public void randomizePerceptronsWeights() { this.perceptrons.forEach(Perceptron::randomizeWeights); }
 }
