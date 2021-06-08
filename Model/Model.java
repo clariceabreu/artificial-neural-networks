@@ -3,11 +3,11 @@ package Model;
 import IO.Dataset;
 import IO.DataVector;
 import IO.Output;
+import Model.ActivationFunctions.ActivatorFunction;
 import Model.ActivationFunctions.ReLuFunction;
 import Model.ActivationFunctions.SigmoidFunction;
 import Model.Components.Layer;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Model {
     private Dataset dataset;
@@ -17,20 +17,17 @@ public class Model {
     private Layer hiddenLayer;
     private Layer outputLayer;
 
-    private Float alpha = 0.2F;
-    private final int nOfHiddenPerceptrons = 2;
+    private Float alpha = 0.3F;
+    private final int nOfHiddenPerceptrons = 4;
     private final int maxEpochs = 5000;
 
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
         this.output = output;
 
-        int nOfInputPerceptrons = dataset.getInputLength();
-        int nOfOutputPerceptrons = dataset.getLabelLength();
-
-        this.inputLayer = new Layer(nOfInputPerceptrons, null, null);
+        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
         this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new ReLuFunction());
-        this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction());
+        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, new SigmoidFunction());
     }
 
     public long trainModel() {
@@ -40,6 +37,7 @@ public class Model {
         int epoch = 1;
         Float meanError = 1F;
 
+        //TO DO: trabalhar melhor a condição de parada
         while (epoch < maxEpochs && meanError > 0.01F) {
             for (int i = 0; i < dataset.getTrainSet().size(); i++) {
                 DataVector data = dataset.getTrainSet().get(i);
@@ -62,7 +60,7 @@ public class Model {
     public void testModel() {
         for (DataVector test : dataset.getTestSet()) {
             feedFoward(test);
-            output.printTestResult(outputLayer, test);
+            output.printModelOutput(outputLayer, test);
         }
     }
 
@@ -82,17 +80,24 @@ public class Model {
         this.hiddenLayer.updateWeights();
     }
 
-    public Layer getHiddenLayer() { return hiddenLayer; }
+    public Layer getInputLayer() { return this.inputLayer; }
 
-    public Layer getOutputLayer() { return outputLayer; }
+    public Layer getHiddenLayer() { return this.hiddenLayer; }
 
-    public void setInputLayer(Layer inputLayer) { this.inputLayer = inputLayer; }
+    public Layer getOutputLayer() { return this.outputLayer; }
 
     public void setHiddenLayer(Layer hiddenLayer) { this.hiddenLayer = hiddenLayer; }
 
     public void setOutputLayer(Layer outputLayer) { this.outputLayer = outputLayer; }
 
     public void setAlpha(Float alpha) { this.alpha = alpha; }
+
+    public void setParams(Float alpha, int nOfHiddenPerceptrons, ActivatorFunction hiddenLayerActivatorFunction, ActivatorFunction outputLayerActivatorFunction) {
+        this.alpha = alpha;
+        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
+        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerActivatorFunction);
+        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerActivatorFunction);
+    }
 
     public Float getAlpha() { return alpha; }
 

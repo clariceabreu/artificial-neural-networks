@@ -10,7 +10,7 @@ import java.util.List;
 public class Output {
     private PrintWriter initialParamsOutput;
     private PrintWriter trainOutput;
-    private PrintWriter testOutput;
+    private PrintWriter modelOutput;
     private PrintWriter errorsOutput;
     private PrintWriter testSummaryOutput;
 
@@ -20,7 +20,7 @@ public class Output {
         try {
             this.initialParamsOutput = new PrintWriter("outputs/initial_params.txt", "UTF-8");
             this.trainOutput = new PrintWriter("outputs/train_model.txt", "UTF-8");
-            this.testOutput = new PrintWriter("outputs/test_model.txt", "UTF-8");
+            this.modelOutput = new PrintWriter("outputs/test_model.txt", "UTF-8");
             this.errorsOutput = new PrintWriter("outputs/errors.txt", "UTF-8");
             this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
         } catch (IOException e) {
@@ -31,8 +31,8 @@ public class Output {
         allFiles = new ArrayList<>();
         allFiles.add(initialParamsOutput);
         allFiles.add(trainOutput);
-        allFiles.add(testOutput);
         allFiles.add(errorsOutput);
+        allFiles.add(modelOutput);
         allFiles.add(testSummaryOutput);
     }
 
@@ -65,7 +65,7 @@ public class Output {
         this.errorsOutput.println(error);
     }
 
-    public void printTestResult(Layer outputLayer, DataVector test) {
+    public void printModelOutput(Layer outputLayer, DataVector test) {
         String inputs = "[";
         for (int i = 0; i < test.getInput().length; i++) {
             if (i > 0) inputs += ',';
@@ -80,10 +80,10 @@ public class Output {
         }
         outputs += ']';
 
-        this.testOutput.println("Inputs: " + inputs);
-        this.testOutput.println("Expected output: " + outputs);
-        this.testOutput.println("Output: [" + String.join(",", outputLayer.getOutput()) + "]");
-        this.testOutput.println();
+        this.modelOutput.println("Inputs: " + inputs);
+        this.modelOutput.println("Expected output: " + outputs);
+        this.modelOutput.println("Output: [" + String.join(",", outputLayer.getOutput()) + "]");
+        this.modelOutput.println();
     }
 
     public void printTestSummary(Layer hiddenLayer, Layer outputLayer, Float alpha, long time) {
@@ -96,11 +96,27 @@ public class Output {
         this.testSummaryOutput.println();
     }
 
-    public void printTestNumber(int testNumber) {
-        allFiles.forEach(file -> file.println("-------------------------------Test #" + testNumber + "-------------------------------"));
+    public void printTestResult(String result) {
+        this.testSummaryOutput.println("---------------------------------------------------------------------------------------------------");
+        this.testSummaryOutput.println();
+        this.testSummaryOutput.println(result);
+        this.testSummaryOutput.println();
     }
 
-    public void generateOutputFiles() { allFiles.forEach(PrintWriter::close); }
+    public void printTestHeader(String testName) {
+        allFiles.forEach(file -> file.println("-------------------------------" + testName + "-------------------------------"));
+    }
+
+    public void printFinalExecution() {
+        this.initialParamsOutput.println("-------------------------------Final Execution-------------------------------");
+        this.trainOutput.println("-------------------------------Final Execution-------------------------------");
+        this.errorsOutput.println("-------------------------------Final Execution-------------------------------");
+        this.modelOutput.println("-------------------------------Final Execution-------------------------------");
+    }
+
+    public void generateOutputFiles() {
+        allFiles.forEach(PrintWriter::close);
+    }
 
     private void printWeights(List<Perceptron> perceptrons, PrintWriter out, String layer) {
         for (int i = 0; i < perceptrons.size(); i++) {

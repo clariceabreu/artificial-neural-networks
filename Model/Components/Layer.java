@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class Layer
-{
+public class Layer {
     private List<Perceptron> perceptrons;
     private ActivatorFunction function;
     private List<Float> instantErrors;
