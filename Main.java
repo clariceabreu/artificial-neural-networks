@@ -31,13 +31,12 @@ public class Main {
 
         Model model = new Model(dataset, output);
 
-        testNumberOfHiddenPerceptrons(model, output);
-        testActivationFunctions(model, output);
-        testAlpha(model, output);
+//        testNumberOfHiddenPerceptrons(model, output);
+//        testActivationFunctions(model, output);
+//        testAlpha(model, output);
+//        output.printFinalExecution();
 
-        model.setParams(alpha, nOfHiddenPerceptrons, hiddenLayerActivatorFunction, outputLayerActivatorFunction);
 
-        output.printFinalExecution();
         model.trainModel();
         model.testModel();
 
@@ -61,6 +60,7 @@ public class Main {
             }
         }
         output.printTestResult("BEST NUMBER OF HIDDEN PERCEPTRON IS: " + nOfHiddenPerceptrons);
+        model.updateLayers(nOfHiddenPerceptrons, hiddenLayerActivatorFunction, outputLayerActivatorFunction);
     }
 
     public static void testActivationFunctions(Model model, Output output) {
@@ -87,6 +87,7 @@ public class Main {
 
         output.printTestResult("BEST ACTIVATOR FUNCTION FOR HIDDEN LAYER IS: " + hiddenLayerActivatorFunction
         + "\nBEST ACTIVATOR FUNCTION FOR OUTPUT LAYER IS: " + outputLayerActivatorFunction);
+        model.updateLayers(nOfHiddenPerceptrons, hiddenLayerActivatorFunction, outputLayerActivatorFunction);
     }
 
     public static void testAlpha(Model model, Output output) {
@@ -105,11 +106,11 @@ public class Main {
         }
 
         output.printTestResult("BEST ALPHA IS: " + alpha);
+        model.setAlpha(alpha);
     }
 
     private static long testModel(Model model, Output output, String testName) {
         output.printTestHeader(testName);
-        model.randomizePerceptronsWeights();
         long time = model.trainModel();
         model.testModel();
         output.printTestSummary(model.getHiddenLayer(), model.getOutputLayer(), model.getAlpha(), time);

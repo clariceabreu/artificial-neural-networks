@@ -8,6 +8,7 @@ import Model.ActivationFunctions.ReLuFunction;
 import Model.ActivationFunctions.SigmoidFunction;
 import Model.Components.Layer;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Model {
     private Dataset dataset;
@@ -36,18 +37,18 @@ public class Model {
 
         int epoch = 1;
         Float meanError = 1F;
+        List<Float> instantErrors = new ArrayList<>();
 
         //TO DO: trabalhar melhor a condição de parada
         while (epoch < maxEpochs && meanError > 0.01F) {
-            for (int i = 0; i < dataset.getTrainSet().size(); i++) {
-                DataVector data = dataset.getTrainSet().get(i);
+            for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
                 backPropagation(data);
                 updateWeights();
-                outputLayer.calculateInstantError(data, i);
+                instantErrors.add(outputLayer.calculateInstantError(data));
             }
 
-            meanError = outputLayer.getMeanSquareError();
+            meanError = outputLayer.calculateMeanSquareError(instantErrors);
             output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
             epoch++;
         }
@@ -92,19 +93,13 @@ public class Model {
 
     public void setAlpha(Float alpha) { this.alpha = alpha; }
 
-    public void setParams(Float alpha, int nOfHiddenPerceptrons, ActivatorFunction hiddenLayerActivatorFunction, ActivatorFunction outputLayerActivatorFunction) {
-        this.alpha = alpha;
+    public void updateLayers(int nOfHiddenPerceptrons, ActivatorFunction hiddenLayerActivatorFunction, ActivatorFunction outputLayerActivatorFunction) {
         this.inputLayer = new Layer(dataset.getInputLength(), null, null);
         this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerActivatorFunction);
         this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerActivatorFunction);
     }
 
     public Float getAlpha() { return alpha; }
-
-    public void randomizePerceptronsWeights() {
-        this.hiddenLayer.randomizePerceptronsWeights();
-        this.outputLayer.randomizePerceptronsWeights();
-    }
 
     public void initializeLayersWithFixedWeights(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
         ArrayList<ArrayList<Float>> hiddenLayerWeights = new ArrayList<>();
