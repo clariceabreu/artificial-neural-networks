@@ -18,10 +18,10 @@ public class Model {
     private Layer hiddenLayer;
     private Layer outputLayer;
 
-    private Float alpha = 0.3F;
+    private Float alpha = 0.02F;
     private final int nOfHiddenPerceptrons = 4;
-    private final int maxEpochs = 5000;
-
+    private final int maxEpochs = 3000;
+  
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
         this.output = output;

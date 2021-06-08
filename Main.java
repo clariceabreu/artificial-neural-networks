@@ -31,11 +31,10 @@ public class Main {
 
         Model model = new Model(dataset, output);
 
-//        testNumberOfHiddenPerceptrons(model, output);
-//        testActivationFunctions(model, output);
-//        testAlpha(model, output);
-//        output.printFinalExecution();
-
+        //testNumberOfHiddenPerceptrons(model, output);
+        //testActivationFunctions(model, output);
+        //testAlpha(model, output);
+        //output.printFinalExecution();
 
         model.trainModel();
         model.testModel();

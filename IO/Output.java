@@ -17,6 +17,10 @@ public class Output {
     private List<PrintWriter> allFiles;
 
     public Output() {
+        File outputsDir = new File("outputs");
+        if (!outputsDir.exists()) {
+            outputsDir.mkdir();
+        }
         try {
             this.initialParamsOutput = new PrintWriter("outputs/initial_params.txt", "UTF-8");
             this.trainOutput = new PrintWriter("outputs/train_model.txt", "UTF-8");
