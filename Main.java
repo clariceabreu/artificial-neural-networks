@@ -111,7 +111,6 @@ public class Main {
     private static long testModel(Model model, Output output, String testName) {
         output.printTestHeader(testName);
         long time = model.trainModel();
-        model.testModel();
         output.printTestSummary(model.getHiddenLayer(), model.getOutputLayer(), model.getAlpha(), time);
         testIndex++;
 
