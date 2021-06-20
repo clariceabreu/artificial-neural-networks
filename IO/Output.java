@@ -10,9 +10,11 @@ import java.util.List;
 
 public class Output {
     private PrintWriter initialParamsOutput;
+    private PrintWriter initialWeightsOutput;
     private PrintWriter trainOutput;
+    private PrintWriter finalWeightsOutput;
     private PrintWriter modelOutput;
-    private PrintWriter errorsOutput;
+    private PrintWriter trainErrorsOutput;
     private PrintWriter testSummaryOutput;
 
     private List<PrintWriter> allFiles;
@@ -27,9 +29,11 @@ public class Output {
         }
         try {
             this.initialParamsOutput = new PrintWriter("outputs/initial_params.txt", "UTF-8");
+            this.initialWeightsOutput = new PrintWriter("outputs/initial_weights.txt", "UTF-8");
             this.trainOutput = new PrintWriter("outputs/train_model.txt", "UTF-8");
+            this.finalWeightsOutput = new PrintWriter("outputs/final_weights.txt", "UTF-8");
             this.modelOutput = new PrintWriter("outputs/model_output.txt", "UTF-8");
-            this.errorsOutput = new PrintWriter("outputs/errors.txt", "UTF-8");
+            this.trainErrorsOutput = new PrintWriter("outputs/train_errors.txt", "UTF-8");
             this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
         } catch (IOException e) {
             System.out.println("An error occurred while creating output files");
@@ -38,8 +42,10 @@ public class Output {
 
         allFiles = new ArrayList<>();
         allFiles.add(initialParamsOutput);
+        allFiles.add(initialWeightsOutput);
         allFiles.add(trainOutput);
-        allFiles.add(errorsOutput);
+        allFiles.add(finalWeightsOutput);
+        allFiles.add(trainErrorsOutput);
         allFiles.add(modelOutput);
         allFiles.add(testSummaryOutput);
     }
@@ -53,12 +59,13 @@ public class Output {
 
         this.initialParamsOutput.println("Number of perceptrons in the hidden layer: " + hiddenLayer.getPerceptrons().size());
         this.initialParamsOutput.println("Activator function in the hidden layer: " + hiddenLayer.getFunction().getFunctionName());
-        printWeights(hiddenLayer.getPerceptrons(), this.initialParamsOutput, "hidden layer");
         this.initialParamsOutput.println();
 
         this.initialParamsOutput.println("Number of perceptrons in the output layer: " + outputLayer.getPerceptrons().size());
         this.initialParamsOutput.println("Activator function in the output layer: " + outputLayer.getFunction().getFunctionName());
-        printWeights(outputLayer.getPerceptrons(), this.initialParamsOutput, "output layer");
+
+        printWeights(hiddenLayer.getPerceptrons(), this.initialWeightsOutput, "hidden layer");
+        printWeights(outputLayer.getPerceptrons(), this.initialWeightsOutput, "output layer");
     }
 
     public void printTrainStep(Layer hiddenLayer, Layer outputLayer, Float error, int epoch) {
@@ -70,7 +77,12 @@ public class Output {
         this.trainOutput.println();
 
         //Prints only the error in a separated file
-        this.errorsOutput.println(error);
+        this.trainErrorsOutput.println(error);
+    }
+
+    public void printFinalWeights(Layer hiddenLayer, Layer outputLayer) {
+        printWeights(hiddenLayer.getPerceptrons(), this.finalWeightsOutput, "hidden layer");
+        printWeights(outputLayer.getPerceptrons(), this.finalWeightsOutput, "output layer");
     }
 
     public void printModelOutput(Layer outputLayer, DataVector test) {
@@ -86,9 +98,11 @@ public class Output {
 
         String input = Arrays.toString(inputsArray);
         String expectedOutput = Arrays.toString(expectedOutputArray);
+        String rawOutput = Arrays.toString(outputLayer.getRawOutput());
         String output = Arrays.toString(outputLayer.getOutput());
 
         this.modelOutput.println("Inputs: " + input);
+        this.modelOutput.println("Raw output is: " + rawOutput);
         this.modelOutput.println("Expected output: " + expectedOutput);
         this.modelOutput.println("Output: " + output);
 
@@ -103,8 +117,9 @@ public class Output {
         this.modelOutput.println();
     }
 
-    public void printFinalResult() {
+    public void printFinalResult(Float meanError) {
         this.modelOutput.println("---------------------------------------------------------------------------------------------------");
+        this.modelOutput.println("Mean square error: " + meanError);
         this.modelOutput.println("Number of correct responses " + correctResponses + " out of " + (correctResponses + wrongResponses));
         this.modelOutput.println("---------------------------------------------------------------------------------------------------");
     }
@@ -119,6 +134,7 @@ public class Output {
         this.testSummaryOutput.println();
     }
 
+
     public void printTestResult(String result) {
         this.testSummaryOutput.println("---------------------------------------------------------------------------------------------------");
         this.testSummaryOutput.println();
@@ -128,13 +144,6 @@ public class Output {
 
     public void printTestHeader(String testName) {
         allFiles.forEach(file -> file.println("-------------------------------" + testName + "-------------------------------"));
-    }
-
-    public void printFinalExecution() {
-        this.initialParamsOutput.println("-------------------------------Final Execution-------------------------------");
-        this.trainOutput.println("-------------------------------Final Execution-------------------------------");
-        this.errorsOutput.println("-------------------------------Final Execution-------------------------------");
-        this.modelOutput.println("-------------------------------Final Execution-------------------------------");
     }
 
     public void generateOutputFiles() {
@@ -156,5 +165,13 @@ public class Output {
             out.println("                                                " + perceptrons.get(i).getBiasWeight() + " (bias)");
             out.println();
         }
+    }
+
+    public static void setCorrectResponses(int correctResponses) {
+        Output.correctResponses = correctResponses;
+    }
+
+    public static void setWrongResponses(int wrongResponses) {
+        Output.wrongResponses = wrongResponses;
     }
 }

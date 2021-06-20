@@ -5,7 +5,6 @@ import Model.ActivationFunctions.ActivatorFunction;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class Layer {
     private List<Perceptron> perceptrons;
@@ -118,6 +117,17 @@ public class Layer {
         return this.meanSquareError;
     }
 
+    //Returns an array of the output signals of all the perceptrons
+    public String[] getRawOutput() {
+        String[] output = new String[this.perceptrons.size()];
+
+        for (int i = 0; i < this.perceptrons.size(); i++) {
+            output[i] = perceptrons.get(i).getOutputSignal().toString();
+        }
+
+        return output;
+    }
+
 
     //Returns an array of the output signals of all the perceptrons (converted to int)
     public String[] getOutput() {
@@ -139,6 +149,4 @@ public class Layer {
     public ActivatorFunction getFunction() { return this.function; }
 
     public Float getMeanSquareError() { return this.meanSquareError; }
-
-    public void setFunction(ActivatorFunction function) { this.function = function; }
 }

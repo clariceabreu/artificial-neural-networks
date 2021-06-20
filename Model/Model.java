@@ -18,20 +18,19 @@ public class Model {
     private Layer hiddenLayer;
     private Layer outputLayer;
 
-    private Float alpha = 0.3F;
-    private final int nOfHiddenPerceptrons = 2;
-    private final int maxEpochs = 5000;
+    private Float alpha = 0.35F;
+    private int nOfHiddenPerceptrons = 12;
+    private ActivatorFunction hiddenLayerFunction = new ReLuFunction();
+    private ActivatorFunction outputLayerFunction = new SigmoidFunction();
+    private int maxEpochs = 5000;
   
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
         this.output = output;
-
-        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
-        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new ReLuFunction());
-        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, new SigmoidFunction());
     }
 
     public long trainModel() {
+        this.initializeLayers();
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
         long startTime = System.currentTimeMillis();
 
@@ -54,16 +53,25 @@ public class Model {
         }
 
         long duration = System.currentTimeMillis() - startTime;
+        output.printFinalWeights(hiddenLayer, outputLayer);
 
         return duration;
     }
 
     public void testModel() {
+        Output.setCorrectResponses(0);
+        Output.setWrongResponses(0);
+
+        List<Float> instantErrors = new ArrayList<>();
+
         for (DataVector test : dataset.getTestSet()) {
             feedFoward(test);
+            instantErrors.add(outputLayer.calculateInstantError(test));
             output.printModelOutput(outputLayer, test);
         }
-        output.printFinalResult();
+
+        Float meanError = outputLayer.calculateMeanSquareError(instantErrors);
+        output.printFinalResult(meanError);
     }
 
     public void feedFoward(DataVector data) {
@@ -82,25 +90,31 @@ public class Model {
         this.hiddenLayer.updateWeights();
     }
 
-    public Layer getInputLayer() { return this.inputLayer; }
-
     public Layer getHiddenLayer() { return this.hiddenLayer; }
 
     public Layer getOutputLayer() { return this.outputLayer; }
 
-    public void setHiddenLayer(Layer hiddenLayer) { this.hiddenLayer = hiddenLayer; }
-
-    public void setOutputLayer(Layer outputLayer) { this.outputLayer = outputLayer; }
-
     public void setAlpha(Float alpha) { this.alpha = alpha; }
 
-    public void updateLayers(int nOfHiddenPerceptrons, ActivatorFunction hiddenLayerActivatorFunction, ActivatorFunction outputLayerActivatorFunction) {
-        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
-        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerActivatorFunction);
-        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerActivatorFunction);
+    public void setNOfHiddenPerceptrons(int nOfHiddenPerceptrons) {
+        this.nOfHiddenPerceptrons = nOfHiddenPerceptrons;
+    }
+
+    public void setHiddenLayerFunction(ActivatorFunction hiddenLayerFunction) {
+        this.hiddenLayerFunction = hiddenLayerFunction;
+    }
+
+    public void setOutputLayerFunction(ActivatorFunction outputLayerFunction) {
+        this.outputLayerFunction = outputLayerFunction;
     }
 
     public Float getAlpha() { return alpha; }
+
+    public void initializeLayers() {
+        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
+        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerFunction);
+        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerFunction);
+    }
 
     public void initializeLayersWithFixedWeights(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
         ArrayList<ArrayList<Float>> hiddenLayerWeights = new ArrayList<>();

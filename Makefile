@@ -11,10 +11,17 @@ run: Main.class
 	java Main datasets/dataset_XOR.csv 1
 
 run-charset: Main.class
-	java Main datasets/dataset_chars_clean.csv 7
+	java Main datasets/dataset_chars_clean.csv datasets/dataset_chars_clean.csv 7
 
-plot: run
-	gnuplot --persist -e 'plot "outputs/errors.txt" with lines'
+run-charset-noise: Main.class
+	java Main datasets/dataset_chars_clean.csv datasets/dataset_chars_noise.csv 7
+
+run-charset-noise-20: Main.class
+	java Main datasets/dataset_chars_clean.csv datasets/dataset_chars_noise_20.csv 7
+
+plot: run-charset-noise-20
+	gnuplot --persist -e 'plot "outputs/train_errors.txt" with lines'
+	gnuplot --persist -e 'plot "outputs/test_errors.txt" with lines'
 
 clean:
 	find -name *.class -exec rm {} \;

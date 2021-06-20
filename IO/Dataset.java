@@ -7,19 +7,26 @@ import java.util.Collections;
 import java.util.Scanner;
 
 public class Dataset {
-    private List<DataVector> vectors;
+    private List<DataVector> vectorsTrain;
+    private List<DataVector> vectorsTest;
     private int inputLength;
     private int labelLength;
 
-    public Dataset(String filePath, int labelLength) throws RuntimeException {
-        vectors = new ArrayList<>();
+    public Dataset(String trainDataset, String testDataset, int labelLength) throws RuntimeException {
+        vectorsTrain = new ArrayList<>();
+        vectorsTest = new ArrayList<>();
         this.labelLength = labelLength;
 
+        this.getEntryFromFile(trainDataset, vectorsTrain);
+        this.getEntryFromFile(testDataset, vectorsTest);
+    }
+
+    private void getEntryFromFile(String filePath, List<DataVector> vectors) {
         try (Scanner scanner = new Scanner(new File(filePath))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().replaceAll("\\uFEFF", ""); //Remove ZERO WIDTH NO-BREAK SPACE
                 String[] entry = line.split(",");
-                addVectorFromEntry(entry, labelLength);
+                addVectorFromEntry(entry, labelLength, vectors);
             }
         } catch (Exception e) {
             System.out.println("An error occurred while initializing dataset");
@@ -27,7 +34,7 @@ public class Dataset {
         }
     }
 
-    private void addVectorFromEntry(String[] entry, int labelLength) {
+    private void addVectorFromEntry(String[] entry, int labelLength, List<DataVector> vectors) {
         this.inputLength = entry.length - this.labelLength;
         float[] input = new float[inputLength];
         float[] label = new float[labelLength];
@@ -45,13 +52,12 @@ public class Dataset {
     }
 
     public List<DataVector> getTestSet() {
-        Collections.shuffle(vectors);
-        return vectors;
+        return vectorsTest;
     }
 
     public List<DataVector> getTrainSet() {
-        Collections.shuffle(vectors);
-        return vectors;
+        Collections.shuffle(vectorsTrain);
+        return vectorsTrain;
     }
 
     public int getInputLength() {
