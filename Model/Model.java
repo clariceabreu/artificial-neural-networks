@@ -40,6 +40,7 @@ public class Model {
 
         //TO DO: trabalhar melhor a condição de parada
         while (epoch < maxEpochs && meanError > 0.01F) {
+            if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
                 backPropagation(data);
@@ -51,6 +52,7 @@ public class Model {
             output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
             epoch++;
         }
+        System.out.println();
 
         long duration = System.currentTimeMillis() - startTime;
         output.printFinalWeights(hiddenLayer, outputLayer);
@@ -71,6 +73,7 @@ public class Model {
         }
 
         Float meanError = outputLayer.calculateMeanSquareError(instantErrors);
+        output.printTestError(meanError);
         output.printFinalResult(meanError);
     }
 

@@ -19,9 +19,9 @@ run-charset-noise: Main.class
 run-charset-noise-20: Main.class
 	java Main datasets/dataset_chars_clean.csv datasets/dataset_chars_noise_20.csv 7
 
-plot: run-charset-noise-20
-	gnuplot --persist -e 'plot "outputs/train_errors.txt" with lines'
-	gnuplot --persist -e 'plot "outputs/test_errors.txt" with lines'
+plot:
+	gnuplot --persist -e 'plot "outputs/train_errors.txt" with lines, "outputs/test_errors.txt" with lines'
+
 
 clean:
 	find -name *.class -exec rm {} \;
