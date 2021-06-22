@@ -15,6 +15,7 @@ public class Output {
     private PrintWriter finalWeightsOutput;
     private PrintWriter modelOutput;
     private PrintWriter trainErrorsOutput;
+    private PrintWriter testErrorsOutput;
     private PrintWriter testSummaryOutput;
 
     private List<PrintWriter> allFiles;
@@ -34,6 +35,7 @@ public class Output {
             this.finalWeightsOutput = new PrintWriter("outputs/final_weights.txt", "UTF-8");
             this.modelOutput = new PrintWriter("outputs/model_output.txt", "UTF-8");
             this.trainErrorsOutput = new PrintWriter("outputs/train_errors.txt", "UTF-8");
+            this.testErrorsOutput = new PrintWriter("outputs/test_errors.txt", "UTF-8");
             this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
         } catch (IOException e) {
             System.out.println("An error occurred while creating output files");
@@ -46,8 +48,14 @@ public class Output {
         allFiles.add(trainOutput);
         allFiles.add(finalWeightsOutput);
         allFiles.add(trainErrorsOutput);
+        allFiles.add(testErrorsOutput);
         allFiles.add(modelOutput);
         allFiles.add(testSummaryOutput);
+    }
+
+    public void printTestError(Float error)
+    {
+        this.testErrorsOutput.println(error);
     }
 
     public void printInitialParams(Layer inputLayer, Layer hiddenLayer, Layer outputLayer, Float alpha) {
