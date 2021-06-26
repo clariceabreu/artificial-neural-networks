@@ -29,24 +29,6 @@ public class Layer {
         }
     }
 
-    //Instantiates all the perceptrons of the layer using fixed weights
-    public Layer(int numberOfPerceptrons, Layer previousLayer, ActivatorFunction function, ArrayList<ArrayList<Float>> weights) {
-        this.perceptrons = new ArrayList<>();
-        this.function = function;
-
-        for (int i = 0; i < numberOfPerceptrons; i++) {
-            List<Perceptron> perceptronsFromPreviousLayer = new ArrayList<>();
-
-            if (previousLayer != null) {
-                perceptronsFromPreviousLayer = previousLayer.getPerceptrons();
-            }
-
-            Perceptron perceptron = new Perceptron(perceptronsFromPreviousLayer, this, weights.get(i));
-
-            this.perceptrons.add(perceptron);
-        }
-    }
-
     //Sets outputs of the perceptrons using the data from the dataset (this method is only used for input layer)
     public void setOutput(float[] data) {
         for (int i = 0; i < perceptrons.size(); i++) {
@@ -68,7 +50,7 @@ public class Layer {
             Float outputSignal = perceptrons.get(i).getOutputSignal();
             Float inputSignal = perceptrons.get(i).getInputSignal();
             Float error = (label[i] - outputSignal)  * function.derivative(inputSignal);
-            perceptrons.get(i).calculateNewWeights(error, alpha);
+            perceptrons.get(i).calculateDeltaWeights(error, alpha);
         }
     }
 
@@ -88,14 +70,15 @@ public class Layer {
 
             Float error = errorIn * function.derivative(p.getInputSignal());
 
-            p.calculateNewWeights(error, alpha);
+            p.calculateDeltaWeights(error, alpha);
         }
     }
 
-    //Calculate instant error
+    //Calculate instant error based on label value
     //E{n} = 1/2 * Σ(target - output)²
     public Float calculateInstantError(DataVector data) {
         Float errorSum = 0.0F;
+
         for (int i = 0; i < data.getLabel().length; i++) {
             Float target = data.getLabel()[i];
             Float output = this.perceptrons.get(i).getOutputSignal();
@@ -105,7 +88,7 @@ public class Layer {
         return  0.5F * errorSum;
     }
 
-    //Calculate mean error: E{av} = 1/N * Σ E{n}
+    //Calculate mean square error: E{av} = 1/N * Σ E{n}
     //Where n = 1 .. N / N = number of entries in the dataset
     public Float calculateMeanSquareError(List<Float> instantErrors) {
         Float errorSum = 0.0F;
@@ -117,7 +100,7 @@ public class Layer {
         return this.meanSquareError;
     }
 
-    //Returns an array of the output signals of all the perceptrons
+    //Returns a string array of the output signals of all the perceptrons of the layer
     public String[] getRawOutput() {
         String[] output = new String[this.perceptrons.size()];
 
@@ -129,15 +112,20 @@ public class Layer {
     }
 
 
-    //Returns an array of the output signals of all the perceptrons (converted to int)
+    //Returns a string array of the output signals of all the perceptron using a threshold
+    //if the output signal of the perceptron is higher than 0.9 then it's rounded up to 1
+    //if the output signal of the perceptron is lower than 0.1 then it's rounded down to 0
+    //if the output signal of the perceptron is between those two values then it's set as -1
     public String[] getOutput() {
         String[] output = new String[this.perceptrons.size()];
 
         for (int i = 0; i < this.perceptrons.size(); i++) {
             if (this.perceptrons.get(i).getOutputSignal() > 0.9F) {
                 output[i] = "1";
-            } else {
+            } else if (this.perceptrons.get(i).getOutputSignal() < 0.1F){
                 output[i] = "0";
+            } else {
+                output[i] = "-1";
             }
         }
 

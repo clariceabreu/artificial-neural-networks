@@ -39,7 +39,7 @@ public class Model {
         List<Float> instantErrors = new ArrayList<>();
 
         //TO DO: trabalhar melhor a condição de parada
-        while (epoch < maxEpochs && meanError > 0.01F) {
+        while (epoch <= maxEpochs && meanError > 0.01F) {
             if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
@@ -117,47 +117,5 @@ public class Model {
         this.inputLayer = new Layer(dataset.getInputLength(), null, null);
         this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerFunction);
         this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerFunction);
-    }
-
-    public void initializeLayersWithFixedWeights(int nOfInputPerceptrons, int nOfHiddenPerceptrons, int nOfOutputPerceptrons) {
-        ArrayList<ArrayList<Float>> hiddenLayerWeights = new ArrayList<>();
-        ArrayList<Float> firstPerceptronOfHiddenLayer = new ArrayList<>();
-        firstPerceptronOfHiddenLayer.add(0.1F);
-        firstPerceptronOfHiddenLayer.add(-0.1F);
-        firstPerceptronOfHiddenLayer.add(-0.1F);
-
-        ArrayList<Float> secondPerceptronOfHiddenLayer = new ArrayList<>();
-        secondPerceptronOfHiddenLayer.add(0.1F);
-        secondPerceptronOfHiddenLayer.add(0.1F);
-        secondPerceptronOfHiddenLayer.add(-0.1F);
-
-        ArrayList<Float> thirdPerceptronOfHiddenLayer = new ArrayList<>();
-        thirdPerceptronOfHiddenLayer.add(-0.1F);
-        thirdPerceptronOfHiddenLayer.add(-0.1F);
-        thirdPerceptronOfHiddenLayer.add(0.1F);
-
-        hiddenLayerWeights.add(firstPerceptronOfHiddenLayer);
-        hiddenLayerWeights.add(secondPerceptronOfHiddenLayer);
-        hiddenLayerWeights.add(thirdPerceptronOfHiddenLayer);
-
-        ArrayList<ArrayList<Float>> outputLayerWeights = new ArrayList<>();
-        ArrayList<Float> firstPerceptronOfOutputLayer = new ArrayList<>();
-        firstPerceptronOfOutputLayer.add(0.1F);
-        firstPerceptronOfOutputLayer.add(0.0F);
-        firstPerceptronOfOutputLayer.add(0.1F);
-        firstPerceptronOfOutputLayer.add(-0.1F);
-
-        ArrayList<Float> secondPerceptronOfOutputLayer = new ArrayList<>();
-        secondPerceptronOfOutputLayer.add(-0.1F);
-        secondPerceptronOfOutputLayer.add(0.1F);
-        secondPerceptronOfOutputLayer.add(-0.1F);
-        secondPerceptronOfOutputLayer.add(0.1F);
-
-        outputLayerWeights.add(firstPerceptronOfOutputLayer);
-        outputLayerWeights.add(secondPerceptronOfOutputLayer);
-
-        this.inputLayer = new Layer(nOfInputPerceptrons, null, null);
-        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, new SigmoidFunction(), hiddenLayerWeights);
-        this.outputLayer = new Layer(nOfOutputPerceptrons, this.hiddenLayer, new SigmoidFunction(), outputLayerWeights);
     }
 }
