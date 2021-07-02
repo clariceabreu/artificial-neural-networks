@@ -23,23 +23,23 @@ public class Model {
     private ActivatorFunction hiddenLayerFunction = new ReLuFunction();
     private ActivatorFunction outputLayerFunction = new SigmoidFunction();
     private int maxEpochs = 5000;
-  
+
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
         this.output = output;
     }
 
-    public long trainModel() {
+    public long trainModel(boolean earlyStop, Float minError) {
         this.initializeLayers();
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
         long startTime = System.currentTimeMillis();
 
-        int epoch = 1;
+        int epoch = 0;
         Float meanError = 1F;
+        List<Float> validationErrors = new ArrayList<>();
         List<Float> instantErrors = new ArrayList<>();
 
-        //TO DO: trabalhar melhor a condição de parada
-        while (epoch <= maxEpochs && meanError > 0.01F) {
+        while (epoch <= maxEpochs && meanError > minError) {
             if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
@@ -50,6 +50,22 @@ public class Model {
 
             meanError = outputLayer.calculateMeanSquareError(instantErrors);
             output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
+
+            //When the early stop param is true the model is validated to check
+            //if it should stop the training early
+            if (earlyStop) {
+                Float validationError = testModel(true);
+                validationErrors.add(validationError);
+
+                //To check the early stop it is checked whereas the validation error
+                //has increased in the last two epochs
+                if (epoch > 2
+                        && validationErrors.get(epoch) > validationErrors.get(epoch - 1)
+                        && validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2)) {
+                    epoch = maxEpochs + 1;
+                }
+            }
+
             epoch++;
         }
         System.out.println();
@@ -60,7 +76,7 @@ public class Model {
         return duration;
     }
 
-    public void testModel() {
+    public Float testModel(boolean isValidation) {
         Output.setCorrectResponses(0);
         Output.setWrongResponses(0);
 
@@ -69,12 +85,17 @@ public class Model {
         for (DataVector test : dataset.getTestSet()) {
             feedFoward(test);
             instantErrors.add(outputLayer.calculateInstantError(test));
-            output.printModelOutput(outputLayer, test);
+
+            if (!isValidation) output.printModelOutput(outputLayer, test);
         }
 
         Float meanError = outputLayer.calculateMeanSquareError(instantErrors);
         output.printTestError(meanError);
-        output.printFinalResult(meanError);
+
+        if (!isValidation) {
+            output.printFinalResult(meanError);
+        }
+        return meanError;
     }
 
     public void feedFoward(DataVector data) {

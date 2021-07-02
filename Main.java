@@ -35,8 +35,8 @@ public class Main {
         //testAlpha(model, output);
         //output.printFinalExecution();
 
-        model.trainModel();
-        model.testModel();
+        model.trainModel(false, 0.01F);
+        model.testModel(false);
 
         output.generateOutputFiles();
     }
@@ -108,7 +108,7 @@ public class Main {
 
     private static long trainModel(Model model, Output output, String testName) {
         output.printTestHeader(testName);
-        long time = model.trainModel();
+        long time = model.trainModel(false, 0F);
         output.printTestSummary(model.getHiddenLayer(), model.getOutputLayer(), model.getAlpha(), time);
 
         return time;
