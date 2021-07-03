@@ -43,7 +43,11 @@ public class Model {
 
         //Iterates while stop conditions are not met (maximum number of epochs or the mean error)
         while (epoch <= maxEpochs && meanError > minError) {
-            if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
+            if (epoch % 10 == 0) {
+                System.out.print("\033[2J\033[1;1H");
+                System.out.print("Epoch: \033[1;93m" + epoch + "/" + maxEpochs + "\033[m");
+            }
+
             //Iterates through every data in the dataset and does the feedforward, backpropagation and update weights steps
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
