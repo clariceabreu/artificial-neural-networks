@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Output {
+    //This class is responsible for formatting and printing the output files,
+    //used to verify data about the train and test methods as well as the results
     private PrintWriter initialParamsOutput;
     private PrintWriter initialWeightsOutput;
     private PrintWriter trainOutput;
@@ -17,13 +19,19 @@ public class Output {
     private PrintWriter trainErrorsOutput;
     private PrintWriter testErrorsOutput;
     private PrintWriter testSummaryOutput;
+    private PrintWriter modelConfusionMatrix;
 
     private List<PrintWriter> allFiles;
 
     private static int correctResponses = 0;
     private static int wrongResponses = 0;
 
+    private static int[][] confusionMatrix;
+    private static int emptyOutputCount = 0;
+
+
     public Output() {
+        //Instantiates the output files
         File outputsDir = new File("outputs");
         if (!outputsDir.exists()) {
             outputsDir.mkdir();
@@ -37,6 +45,7 @@ public class Output {
             this.trainErrorsOutput = new PrintWriter("outputs/train_errors.txt", "UTF-8");
             this.testErrorsOutput = new PrintWriter("outputs/test_errors.txt", "UTF-8");
             this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
+            this.modelConfusionMatrix = new PrintWriter("outputs/model_confusion_matrix.txt", "UTF-8");
         } catch (IOException e) {
             System.out.println("An error occurred while creating output files");
             e.printStackTrace();
@@ -51,6 +60,7 @@ public class Output {
         allFiles.add(testErrorsOutput);
         allFiles.add(modelOutput);
         allFiles.add(testSummaryOutput);
+        allFiles.add(modelConfusionMatrix);
     }
 
     public void printTestError(Float error)
@@ -76,6 +86,7 @@ public class Output {
         printWeights(outputLayer.getPerceptrons(), this.initialWeightsOutput, "output layer");
     }
 
+    //Prints the information for each epoch in training
     public void printTrainStep(Layer hiddenLayer, Layer outputLayer, Float error, int epoch) {
         this.trainOutput.println("--------------------------------Epoch " + epoch + "--------------------------------");
         printWeights(hiddenLayer.getPerceptrons(), this.trainOutput, "hidden layer");
@@ -93,7 +104,9 @@ public class Output {
         printWeights(outputLayer.getPerceptrons(), this.finalWeightsOutput, "output layer");
     }
 
+    //Prints the results from the model for a given input from the test dataset
     public void printModelOutput(Layer outputLayer, DataVector test) {
+        //Gets the inputs, expected outputs and actual outputs as integer arrays
         int[] inputsArray = new int[test.getInput().length];
         for (int i = 0; i < test.getInput().length; i++) {
             inputsArray[i] = (int) test.getInput()[i];
@@ -104,11 +117,20 @@ public class Output {
             expectedOutputArray[i] = Math.round(test.getLabel()[i]);
         }
 
+        int[] outputArray = new int[outputLayer.getOutput().length];
+        int counter = 0;
+        for (String output: outputLayer.getOutput()) {
+            outputArray[counter] = Integer.parseInt(output);
+            counter++;
+        }
+
+        //Formats the data for better visualization
         String input = Arrays.toString(inputsArray);
         String expectedOutput = Arrays.toString(expectedOutputArray);
         String rawOutput = Arrays.toString(outputLayer.getRawOutput());
-        String output = Arrays.toString(outputLayer.getOutput());
+        String output = Arrays.toString(outputArray);
 
+        //Prints the results
         this.modelOutput.println("Inputs: " + input);
         this.modelOutput.println("Raw output is: " + rawOutput);
         this.modelOutput.println("Expected output: " + expectedOutput);
@@ -123,8 +145,50 @@ public class Output {
         }
 
         this.modelOutput.println();
+
+        //Updates the confusion matrix
+        updateConfusionMatrix(expectedOutputArray, outputArray);
     }
 
+    //Prints the confusion matrix
+    public void printConfusionMatrix() {
+        this.modelConfusionMatrix.println("Confusion Matrix:");
+        for(int i = 0; i < this.confusionMatrix.length; i++) {
+            for(int j = 0; j < this.confusionMatrix.length; j++) {
+                this.modelConfusionMatrix.print(this.confusionMatrix[i][j]);
+                this.modelConfusionMatrix.print("  ");
+            }
+            this.modelConfusionMatrix.println();
+        }
+
+        //prints the number of answers without any 1 as output from the perceptrons
+        this.modelConfusionMatrix.println("Occurrences of empty output: " + this.emptyOutputCount);
+    }
+
+    //Updates the confusion matrix by adding the 1s in the proper row
+    //Expected outputs are in the row and the actual outputs in the columns
+    //If the output does not have any 1s the hasOne variable will remain false and emptyOutputCount is incremented
+    public void updateConfusionMatrix(int[] expectedOutput, int[] output) {
+        int row = getLabelPosition(expectedOutput);
+        boolean hasOnes = false;
+        for(int i = 0; i < output.length; i++) {
+            if(output[i] == 1) {
+                Output.confusionMatrix[row][i] += output[i];
+                hasOnes = true;
+            }
+        }
+        if (hasOnes == false) Output.emptyOutputCount ++;
+    }
+
+    //Gets the row index in the confusion matrix based on the expected output
+    public int getLabelPosition(int[] expectedOutput) {
+        for(int i = 0; i < expectedOutput.length; i++) {
+            if (expectedOutput[i] == 1) return i;
+        }
+        return -1;
+    }
+
+    //Prints the final result
     public void printFinalResult(Float meanError) {
         this.modelOutput.println("---------------------------------------------------------------------------------------------------");
         this.modelOutput.println("Mean square error: " + meanError);
@@ -132,6 +196,7 @@ public class Output {
         this.modelOutput.println("---------------------------------------------------------------------------------------------------");
     }
 
+    //Prints the information on the tests
     public void printTestSummary(Layer hiddenLayer, Layer outputLayer, Float alpha, long time) {
         this.testSummaryOutput.println("Number of hidden perceptrons: " + hiddenLayer.getPerceptrons().size());
         this.testSummaryOutput.println("Hidden layer activator function: " + hiddenLayer.getFunction().getFunctionName());
@@ -142,7 +207,7 @@ public class Output {
         this.testSummaryOutput.println();
     }
 
-
+    //Prints the final results for the tests
     public void printTestResult(String result) {
         this.testSummaryOutput.println("---------------------------------------------------------------------------------------------------");
         this.testSummaryOutput.println();
@@ -173,6 +238,17 @@ public class Output {
             out.println("                                                " + perceptrons.get(i).getBiasWeight() + " (bias)");
             out.println();
         }
+    }
+
+    //Initializes a square matrix with the same size as the output and fills it with 0s
+    public static void initializeConfusionMatrix(int outputSize) {
+        int[][] matrix = new int[outputSize][outputSize];
+        for(int i = 0; i < outputSize; i++) {
+            for(int j = 0; j < outputSize; j++) {
+                matrix[i][j] = 0;
+            }
+        }
+        Output.confusionMatrix = matrix;
     }
 
     public static void setCorrectResponses(int correctResponses) {

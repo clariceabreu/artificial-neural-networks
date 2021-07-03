@@ -74,7 +74,7 @@ public class Layer {
         }
     }
 
-    //Calculate instant error based on label value
+    //Calculates instant error based on label value
     //E{n} = 1/2 * Σ(target - output)²
     public Float calculateInstantError(DataVector data) {
         Float errorSum = 0.0F;
@@ -88,7 +88,7 @@ public class Layer {
         return  0.5F * errorSum;
     }
 
-    //Calculate mean square error: E{av} = 1/N * Σ E{n}
+    //Calculates mean square error: E{av} = 1/N * Σ E{n}
     //Where n = 1 .. N / N = number of entries in the dataset
     public Float calculateMeanSquareError(List<Float> instantErrors) {
         Float errorSum = 0.0F;
