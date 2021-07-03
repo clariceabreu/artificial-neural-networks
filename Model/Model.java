@@ -40,7 +40,10 @@ public class Model {
         List<Float> instantErrors = new ArrayList<>();
 
         while (epoch <= maxEpochs && meanError > minError) {
-            if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
+            if (epoch % 10 == 0) {
+                System.out.print("\033[2J\033[1;1H");
+                System.out.print("Epoch: \033[1;93m" + epoch + "/" + maxEpochs + "\033[m");
+            }
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
                 backPropagation(data);
