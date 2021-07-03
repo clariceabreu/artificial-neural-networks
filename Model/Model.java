@@ -31,18 +31,18 @@ public class Model {
     }
 
     //Trains the model
-    public long trainModel() {
-        //Initial configurations
+    public long trainModel(boolean earlyStop, Float minError) {        //Initial configurations
         this.initializeLayers();
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
         long startTime = System.currentTimeMillis();
 
-        int epoch = 1;
+        int epoch = 0;
         Float meanError = 1F;
+        List<Float> validationErrors = new ArrayList<>();
         List<Float> instantErrors = new ArrayList<>();
 
         //Iterates while stop conditions are not met (maximum number of epochs or the mean error)
-        while (epoch <= maxEpochs && meanError > 0.01F) {
+        while (epoch <= maxEpochs && meanError > minError) {
             if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
             //Iterates through every data in the dataset and does the feedforward, backpropagation and update weights steps
             for (DataVector data : dataset.getTrainSet()) {
@@ -55,6 +55,22 @@ public class Model {
             //Calculates mean error to check early stop condition and increments number os epochs run
             meanError = outputLayer.calculateMeanSquareError(instantErrors);
             output.printTrainStep(hiddenLayer, outputLayer, meanError, epoch);
+
+            //When the early stop param is true the model is validated to check
+            //if it should stop the training early
+            if (earlyStop) {
+                Float validationError = testModel(true);
+                validationErrors.add(validationError);
+
+                //To check the early stop it is checked whereas the validation error
+                //has increased in the last two epochs
+                if (epoch > 2
+                        && validationErrors.get(epoch) > validationErrors.get(epoch - 1)
+                        && validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2)) {
+                    epoch = maxEpochs + 1;
+                }
+            }
+
             epoch++;
         }
         System.out.println();
@@ -67,7 +83,7 @@ public class Model {
     }
 
     //Tests the model
-    public void testModel() {
+    public Float testModel(boolean isValidation) {
         //Initial configuration of Output class attributes
         Output.setCorrectResponses(0);
         Output.setWrongResponses(0);
@@ -81,13 +97,18 @@ public class Model {
         for (DataVector test : dataset.getTestSet()) {
             feedFoward(test);
             instantErrors.add(outputLayer.calculateInstantError(test));
-            output.printModelOutput(outputLayer, test);
+
+            if (!isValidation) output.printModelOutput(outputLayer, test);
         }
         output.printConfusionMatrix();
 
         Float meanError = outputLayer.calculateMeanSquareError(instantErrors);
         output.printTestError(meanError);
-        output.printFinalResult(meanError);
+
+        if (!isValidation) {
+            output.printFinalResult(meanError);
+        }
+        return meanError;
     }
 
     //Propagates the input signal through the next layers, applying the weights for each perceptron
