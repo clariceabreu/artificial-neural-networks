@@ -165,15 +165,15 @@ public class Output {
         this.modelConfusionMatrix.println("Occurrences of empty output: " + this.emptyOutputCount);
     }
 
-    //Updates the confusion matrix by adding the 1s in the proper row
+    //Updates the confusion matrix by incrementing the proper row
     //Expected outputs are in the row and the actual outputs in the columns
     //If the output does not have any 1s the hasOne variable will remain false and emptyOutputCount is incremented
     public void updateConfusionMatrix(int[] expectedOutput, int[] output) {
         int row = getLabelPosition(expectedOutput);
         boolean hasOnes = false;
-        for(int i = 0; i < output.length; i++) {
-            if(output[i] == 1) {
-                Output.confusionMatrix[row][i] += output[i];
+        for(int column = 0; column < output.length; column++) {
+            if(output[column] == 1) {
+                Output.confusionMatrix[row][column]++;
                 hasOnes = true;
             }
         }
