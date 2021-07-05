@@ -24,6 +24,12 @@ public class Model {
     private ActivatorFunction outputLayerFunction = new SigmoidFunction();
     private int maxEpochs = 5000;
 
+    // ANSI escape sequences for colorful outputs
+    final String reset_style = "\033[m";
+    final String bold_yellow = "\033[1;93m";
+    final String bold_yellowbackground = "\033[1;103;30m";
+    final String bold_red = "\033[1;91m";
+
     //Instantiates the model using the data specified when running the program
     public Model(Dataset dataset, Output output) {
         this.dataset = dataset;
@@ -31,7 +37,7 @@ public class Model {
     }
 
     //Trains the model
-    public long trainModel(boolean earlyStop, Float minError) {        //Initial configurations
+    public long trainModel(boolean earlyStop, float minError) {        //Initial configurations
         this.initializeLayers();
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
         long startTime = System.currentTimeMillis();
@@ -43,7 +49,6 @@ public class Model {
 
         //Iterates while stop conditions are not met (maximum number of epochs or the mean error)
         while (epoch <= maxEpochs && meanError > minError) {
-            if (epoch % 10 == 0) System.out.print("\rEpoch: " + epoch + "/" + maxEpochs);
             //Iterates through every data in the dataset and does the feedforward, backpropagation and update weights steps
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
@@ -69,6 +74,9 @@ public class Model {
                         && validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2)) {
                     epoch = maxEpochs + 1;
                 }
+            }
+            if ((epoch % 10) == 0) {
+                printEpochInfo(epoch, meanError, minError);
             }
 
             epoch++;
@@ -155,5 +163,16 @@ public class Model {
         this.inputLayer = new Layer(dataset.getInputLength(), null, null);
         this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerFunction);
         this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerFunction);
+    }
+
+    private void clearScreen() {
+        System.out.print("\033[2J\033[1;1H");
+    }
+
+    private void printEpochInfo(int epoch, float meanError, float minError) {
+        clearScreen();
+        System.out.println("Epoch: " + bold_yellow + epoch + "/" + maxEpochs + reset_style);
+        System.out.println();
+        System.out.println("Mean error: " + bold_red + meanError  + " > " + minError + reset_style);
     }
 }

@@ -7,6 +7,7 @@ import Model.ActivationFunctions.SigmoidFunction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     private static int nOfHiddenPerceptrons = 12;
@@ -35,8 +36,12 @@ public class Main {
         //testAlpha(model, output);
         //output.printFinalExecution();
 
+        enterAltTermBuffer();
+
         model.trainModel(false, 0.01F);
         model.testModel(false);
+
+        leaveAltTermBuffer();
 
         output.generateOutputFiles();
     }
@@ -112,5 +117,16 @@ public class Main {
         output.printTestSummary(model.getHiddenLayer(), model.getOutputLayer(), model.getAlpha(), time);
 
         return time;
+    }
+
+    private static void enterAltTermBuffer() {
+        System.out.print("\033[?1049h\033[?25l");
+    }
+
+    private static void leaveAltTermBuffer() {
+        System.out.print("\nPress \033[1;93m[enter]\033[m to exit");
+        Scanner s = new Scanner(System.in);
+        s.nextLine();
+        System.out.print("\033[?1049l\033[?25h");
     }
 }
