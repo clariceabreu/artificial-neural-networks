@@ -20,14 +20,13 @@ public class Model {
 
     private Float alpha = 0.35F;
     private int nOfHiddenPerceptrons = 12;
-    private ActivatorFunction hiddenLayerFunction = new ReLuFunction();
+    private ActivatorFunction hiddenLayerFunction = new SigmoidFunction();
     private ActivatorFunction outputLayerFunction = new SigmoidFunction();
     private int maxEpochs = 5000;
 
     // ANSI escape sequences for colorful outputs
     final String reset_style = "\033[m";
     final String bold_yellow = "\033[1;93m";
-    final String bold_yellowbackground = "\033[1;103;30m";
     final String bold_red = "\033[1;91m";
 
     //Instantiates the model using the data specified when running the program
@@ -81,7 +80,6 @@ public class Model {
 
             epoch++;
         }
-        System.out.println();
 
         //Calculates the duration for the training
         long duration = System.currentTimeMillis() - startTime;
@@ -108,32 +106,39 @@ public class Model {
 
             if (!isValidation) output.printModelOutput(outputLayer, test);
         }
-        output.printConfusionMatrix();
 
         Float meanError = outputLayer.calculateMeanSquareError(instantErrors);
         output.printTestError(meanError);
 
         if (!isValidation) {
             output.printFinalResult(meanError);
+            output.printConfusionMatrix();
         }
         return meanError;
     }
 
+    //Initializes each layer with the corresponding parameters
+    private void initializeLayers() {
+        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
+        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerFunction);
+        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerFunction);
+    }
+
     //Propagates the input signal through the next layers, applying the weights for each perceptron
-    public void feedFoward(DataVector data) {
+    private void feedFoward(DataVector data) {
         this.inputLayer.setOutput(data.getInput());
         this.hiddenLayer.calculateOutput();
         this.outputLayer.calculateOutput();
     }
 
     //Propagates the error through to the previous layers, determining the weights and bias corrections
-    public void backPropagation(DataVector data) {
+    private void backPropagation(DataVector data) {
         this.outputLayer.calculateErrorsFromLabel(alpha, data.getLabel());
         this.hiddenLayer.propagateError(alpha, outputLayer.getPerceptrons());
     }
 
     //Updates the weights and bias for each layer
-    public void updateWeights() {
+    private void updateWeights() {
         this.outputLayer.updateWeights();
         this.hiddenLayer.updateWeights();
     }
@@ -158,13 +163,6 @@ public class Model {
 
     public Float getAlpha() { return alpha; }
 
-    //Initializes each layer with the corresponding parameters
-    public void initializeLayers() {
-        this.inputLayer = new Layer(dataset.getInputLength(), null, null);
-        this.hiddenLayer = new Layer(nOfHiddenPerceptrons, this.inputLayer, hiddenLayerFunction);
-        this.outputLayer = new Layer(dataset.getLabelLength(), this.hiddenLayer, outputLayerFunction);
-    }
-
     private void clearScreen() {
         System.out.print("\033[2J\033[1;1H");
     }
@@ -173,6 +171,9 @@ public class Model {
         clearScreen();
         System.out.println("Epoch: " + bold_yellow + epoch + "/" + maxEpochs + reset_style);
         System.out.println();
-        System.out.println("Mean error: " + bold_red + meanError  + " > " + minError + reset_style);
+
+        if (minError > 0F) {
+            System.out.println("Mean error: " + bold_red + meanError  + " > " + minError + reset_style);
+        }
     }
 }

@@ -38,7 +38,7 @@ public class Main {
 
         enterAltTermBuffer();
 
-        model.trainModel(false, 0.01F);
+        model.trainModel(true, 0.01F);
         model.testModel(false);
 
         leaveAltTermBuffer();
@@ -46,7 +46,7 @@ public class Main {
         output.generateOutputFiles();
     }
 
-    public static void testNumberOfHiddenPerceptrons(Model model, Output output) {
+    private static void testNumberOfHiddenPerceptrons(Model model, Output output) {
         long bestTime = Long.MAX_VALUE;
         for (int nOfPerceptrons = 2; nOfPerceptrons <= 63; nOfPerceptrons++) {
             System.out.println("Testing with " + nOfPerceptrons + " perceptrons in hidden layer");
@@ -63,7 +63,7 @@ public class Main {
         output.printTestResult("BEST NUMBER OF HIDDEN PERCEPTRON IS: " + nOfHiddenPerceptrons);
     }
 
-    public static void testActivationFunctions(Model model, Output output) {
+    private static void testActivationFunctions(Model model, Output output) {
         functions.add(new SigmoidFunction());
         functions.add(new ReLuFunction());
 
@@ -93,7 +93,7 @@ public class Main {
         + "\nBEST ACTIVATOR FUNCTION FOR OUTPUT LAYER IS: " + outputLayerActivatorFunction.getFunctionName());
     }
 
-    public static void testAlpha(Model model, Output output) {
+    private static void testAlpha(Model model, Output output) {
         long bestTime = Long.MAX_VALUE;
 
         for (float currentAlpha = 0.01F; currentAlpha < 1.0F; currentAlpha += 0.05F) {
@@ -113,7 +113,7 @@ public class Main {
 
     private static long trainModel(Model model, Output output, String testName) {
         output.printTestHeader(testName);
-        long time = model.trainModel(false, 0F);
+        long time = model.trainModel(true, 0.1F);
         output.printTestSummary(model.getHiddenLayer(), model.getOutputLayer(), model.getAlpha(), time);
 
         return time;
