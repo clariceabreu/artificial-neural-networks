@@ -2,7 +2,7 @@ SOURCES=IO/DataVector.java IO/Dataset.java IO/Output.java Main.java Model/Activa
 
 .PHONY: all run plot clean
 
-all: Main.class
+all: Main.class viewchar
 
 Main.class: $(SOURCES)
 	javac $^
@@ -21,6 +21,12 @@ run-charset-noise-20: Main.class
 
 plot:
 	gnuplot --persist -e 'plot "outputs/train_errors.txt" with lines, "outputs/validation_errors.txt" with lines'
+
+visualize-charset: viewchar
+	./viewchar datasets/dataset_chars_clean.csv
+
+viewchar: viewchar.cpp
+	g++ -o $@ $^
 
 clean:
 	rm *.class & rm */*.class & rm */*/*.class
