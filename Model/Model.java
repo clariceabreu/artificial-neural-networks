@@ -20,7 +20,7 @@ public class Model {
 
     private Float alpha = 0.35F;
     private int nOfHiddenPerceptrons = 12;
-    private ActivatorFunction hiddenLayerFunction = new SigmoidFunction();
+    private ActivatorFunction hiddenLayerFunction = new ReLuFunction();
     private ActivatorFunction outputLayerFunction = new SigmoidFunction();
     private int maxEpochs = 5000;
 

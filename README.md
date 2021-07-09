@@ -27,7 +27,7 @@ To run with java use the follwing commands:
 ### Test parameters
 The application has methods to test the best parameters for the training.
 There are test available to find out the best number of hidden perceptrons, the best activation function for the input and the output layer and the best alpha (learning tax).
-To run the tests go to the Main class and uncomment lines 34 to 37. Be patient, they might take some time to complete.
+To run the tests go to the Main class and uncomment lines 35 to 38. Be patient, they might take some time to complete.
 
 ### Early stop
 To train the model two parameters can be changed to enable the training to stop before the maximum number of epochs (5000). These parameters are:
@@ -51,12 +51,12 @@ Those parameters can be changed by cahnge their values in lines 21 to 25 in the 
 PS: if the parameters tests are run the default values will be overwritten by the tests results.
 
 ## Outputs:
-- initial_parameters.txt: has all the initial parameters used to train the model, i.e. alhpa, number of perceptron in hidden layer, activation functions
-- initial_weights.txt: has all the ramdom initial weights used to start the training
-- train_model.txt: has the weights for each epoch of the training
-- train_errors.txt: has the mean square error of each epoch (used to plot the graph)
-- validation_errors.txt: has the mean square error of each time the model is validated (when the earlyStop is set to true)
-- model_output.txt: the final output of the model test.
-- model_confusion_matrix.txt: the confusion matrix generated when the model is tested.
-- final_weights.txt: has all the final weights for each synapses between percetrons
-- tests_summary.txt: has the result of each iteration of the parameters tests
+- `initial_parameters.txt`: has all the initial parameters used to train the model, i.e. alhpa, number of perceptron in hidden layer, activation functions
+- `initial_weights.txt`: has all the ramdom initial weights used to start the training
+- `train_model.txt`: has the weights for each epoch of the training
+- `train_errors.txt`: has the mean square error of each epoch (used to plot the graph)
+- `validation_errors.txt`: has the mean square error of each time the model is validated (when the earlyStop is set to true)
+- `model_output.txt`: the final output of the model test.
+- `model_confusion_matrix.txt`: the confusion matrix generated when the model is tested.
+- `final_weights.txt`: has all the final weights for each synapses between percetrons
+- `tests_summary.txt`: has the result of each iteration of the parameters tests

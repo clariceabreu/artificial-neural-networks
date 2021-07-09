@@ -31,6 +31,7 @@ public class Main {
 
         Model model = new Model(dataset, output);
 
+        //Uncomment the bellow lines to run tests to find the best parameters
         //testNumberOfHiddenPerceptrons(model, output);
         //testActivationFunctions(model, output);
         //testAlpha(model, output);
