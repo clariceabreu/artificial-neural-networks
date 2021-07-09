@@ -13,6 +13,7 @@ There are the following make commands available:
 - `make run-charset-noise-20`: run the code using *dataset_chars_clean.csv* for training and *dataset_chars_noise_20.csv* for testing the model
 - `make plot`: plot the graph with the mean square error values, if the early stop is set to true both the training errors and the validation errors are ploted, if it is not then only the training erros are ploted.
 - `make clean`: remove the .class files from the code
+- `make visualize-charset`: display the *dataset_chars_clean.csv* using colors to represent the chars
 
 ## Run with java commands
 To run with java use the follwing commands:
