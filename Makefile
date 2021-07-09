@@ -20,7 +20,7 @@ run-charset-noise-20: Main.class
 	java Main datasets/dataset_chars_clean.csv datasets/dataset_chars_noise_20.csv 7
 
 plot:
-	gnuplot --persist -e 'plot "outputs/train_errors.txt" with lines, "outputs/test_errors.txt" with lines'
+	gnuplot --persist -e 'plot "outputs/train_errors.txt" with lines, "outputs/validation_errors.txt" with lines'
 
 visualize-charset: viewchar
 	./viewchar datasets/dataset_chars_clean.csv
@@ -29,4 +29,4 @@ viewchar: viewchar.cpp
 	g++ -o $@ $^
 
 clean:
-	find -name *.class -exec rm {} \;
+	rm *.class & rm */*.class & rm */*/*.class

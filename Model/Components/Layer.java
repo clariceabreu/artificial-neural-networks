@@ -74,7 +74,7 @@ public class Layer {
         }
     }
 
-    //Calculates instant error based on label value
+    //Calculates instant error based on the label in the dataset
     //E{n} = 1/2 * Σ(target - output)²
     public Float calculateInstantError(DataVector data) {
         Float errorSum = 0.0F;

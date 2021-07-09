@@ -17,7 +17,7 @@ public class Output {
     private PrintWriter finalWeightsOutput;
     private PrintWriter modelOutput;
     private PrintWriter trainErrorsOutput;
-    private PrintWriter testErrorsOutput;
+    private PrintWriter validationErrorsOutput;
     private PrintWriter testSummaryOutput;
     private PrintWriter modelConfusionMatrix;
 
@@ -43,7 +43,7 @@ public class Output {
             this.finalWeightsOutput = new PrintWriter("outputs/final_weights.txt", "UTF-8");
             this.modelOutput = new PrintWriter("outputs/model_output.txt", "UTF-8");
             this.trainErrorsOutput = new PrintWriter("outputs/train_errors.txt", "UTF-8");
-            this.testErrorsOutput = new PrintWriter("outputs/test_errors.txt", "UTF-8");
+            this.validationErrorsOutput = new PrintWriter("outputs/validation_errors.txt", "UTF-8");
             this.testSummaryOutput = new PrintWriter("outputs/tests_summary.txt", "UTF-8");
             this.modelConfusionMatrix = new PrintWriter("outputs/model_confusion_matrix.txt", "UTF-8");
         } catch (IOException e) {
@@ -57,7 +57,7 @@ public class Output {
         allFiles.add(trainOutput);
         allFiles.add(finalWeightsOutput);
         allFiles.add(trainErrorsOutput);
-        allFiles.add(testErrorsOutput);
+        allFiles.add(validationErrorsOutput);
         allFiles.add(modelOutput);
         allFiles.add(testSummaryOutput);
         allFiles.add(modelConfusionMatrix);
@@ -65,7 +65,7 @@ public class Output {
 
     public void printTestError(Float error)
     {
-        this.testErrorsOutput.println(error);
+        this.validationErrorsOutput.println(error);
     }
 
     public void printInitialParams(Layer inputLayer, Layer hiddenLayer, Layer outputLayer, Float alpha) {
