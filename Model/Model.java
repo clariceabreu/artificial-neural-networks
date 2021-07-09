@@ -71,15 +71,22 @@ public class Model {
                 if (epoch > 2
                         && validationErrors.get(epoch) > validationErrors.get(epoch - 1)
                         && validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2)) {
-                    epoch = maxEpochs + 1;
+                    break;
                 }
             }
             if ((epoch % 10) == 0) {
-                printEpochInfo(epoch, meanError, minError);
+                printEpochInfo(epoch, meanError, minError, earlyStop, validationErrors);
             }
 
             epoch++;
         }
+<<<<<<< HEAD
+||||||| parent of 98f821d ([+] Last-minute updates on the output)
+        System.out.println();
+=======
+        if (epoch <= maxEpochs) printEpochInfo(epoch, meanError, minError, earlyStop, validationErrors);
+        System.out.println();
+>>>>>>> 98f821d ([+] Last-minute updates on the output)
 
         //Calculates the duration for the training
         long duration = System.currentTimeMillis() - startTime;
@@ -167,13 +174,19 @@ public class Model {
         System.out.print("\033[2J\033[1;1H");
     }
 
-    private void printEpochInfo(int epoch, float meanError, float minError) {
+    private void printEpochInfo(int epoch, float meanError, float minError, boolean earlyStop, List<Float> validationErrors) {
         clearScreen();
         System.out.println("Epoch: " + bold_yellow + epoch + "/" + maxEpochs + reset_style);
         System.out.println();
 
         if (minError > 0F) {
             System.out.println("Mean error: " + bold_red + meanError  + " > " + minError + reset_style);
+        }
+        System.out.println();
+        if (earlyStop && epoch > 2) {
+            System.out.println("Last two epoch's errors:");
+            System.out.println("\t" + bold_red + validationErrors.get(epoch) + " > " + validationErrors.get(epoch - 1) + reset_style);
+            System.out.println("\t" + bold_red + validationErrors.get(epoch - 1) + " > " + validationErrors.get(epoch - 2) + reset_style);
         }
     }
 }
