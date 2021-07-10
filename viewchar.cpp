@@ -7,11 +7,11 @@ const std::string color_of(int value)
 {
 	switch (value) {
 		case -1:
-			return "\e[107m";
+			return "\e[107m \e[m";
 		case 0:
-			return "\e[100m";
+			return "\e[100m \e[m";
 		default:
-			return "\e[40m";
+			return "\e[40m \e[m";
 	}
 }
 
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 				int value;
 				line_stream >> value;
 				line_stream.get();
-				std::cout << color_of(value) << " " << "\e[m";
+				std::cout << color_of(value);
 			}
 			std::cout << std::endl;
 		}
