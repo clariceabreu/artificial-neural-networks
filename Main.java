@@ -42,9 +42,9 @@ public class Main {
         model.trainModel(true, 0.01F);
         model.testModel(false);
 
-        leaveAltTermBuffer();
-
         output.generateOutputFiles();
+
+        leaveAltTermBuffer();
     }
 
     private static void testNumberOfHiddenPerceptrons(Model model, Output output) {

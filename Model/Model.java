@@ -41,14 +41,14 @@ public class Model {
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
         long startTime = System.currentTimeMillis();
 
-        boolean quit = false;
         int epoch = 0;
+        boolean stop = false;
         Float meanError = 1F;
         List<Float> validationErrors = new ArrayList<>();
         List<Float> instantErrors = new ArrayList<>();
 
         //Iterates while stop conditions are not met (maximum number of epochs or the mean error)
-        while (!quit && epoch <= maxEpochs && meanError > minError) {
+        while (epoch <= maxEpochs && !stop && meanError > minError) {
             //Iterates through every data in the dataset and does the feedforward, backpropagation and update weights steps
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
@@ -72,7 +72,7 @@ public class Model {
                 if (epoch > 2
                         && validationErrors.get(epoch) > validationErrors.get(epoch - 1)
                         && validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2)) {
-                    quit = true;
+                    stop = true;
                 }
             }
             if ((epoch % 10) == 0) {
@@ -175,13 +175,17 @@ public class Model {
         System.out.println();
 
         if (minError > 0F) {
-            System.out.println("Mean error: " + bold_red + meanError  + " > " + minError + reset_style);
+            String operator = meanError > minError ? " > " : " < ";
+            System.out.println("Mean error: " + bold_red + meanError  + operator + minError + reset_style);
         }
         System.out.println();
         if (earlyStop && epoch > 2) {
+            String operator1 = validationErrors.get(epoch) > validationErrors.get(epoch - 1) ? " > " : " < ";
+            String operator2 = validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2) ? " > " : " < ";
+
             System.out.println("Last two epoch's errors:");
-            System.out.println("\t" + bold_red + validationErrors.get(epoch) + " > " + validationErrors.get(epoch - 1) + reset_style);
-            System.out.println("\t" + bold_red + validationErrors.get(epoch - 1) + " > " + validationErrors.get(epoch - 2) + reset_style);
+            System.out.println("\t" + bold_red + validationErrors.get(epoch) + operator1 + validationErrors.get(epoch - 1) + reset_style);
+            System.out.println("\t" + bold_red + validationErrors.get(epoch - 1) + operator2 + validationErrors.get(epoch - 2) + reset_style);
         }
     }
 }
