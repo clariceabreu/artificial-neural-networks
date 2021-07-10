@@ -19,7 +19,7 @@ public class Model {
     private Layer outputLayer;
 
     private Float alpha = 0.35F;
-    private int nOfHiddenPerceptrons = 12;
+    private int nOfHiddenPerceptrons = 2;
     private ActivatorFunction hiddenLayerFunction = new ReLuFunction();
     private ActivatorFunction outputLayerFunction = new SigmoidFunction();
     private int maxEpochs = 5000;
@@ -28,6 +28,8 @@ public class Model {
     final String reset_style = "\033[m";
     final String bold_yellow = "\033[1;93m";
     final String bold_red = "\033[1;91m";
+    final String redbg = "\033[1;30;101m";
+    final String greenbg = "\033[1;30;102m";
 
     //Instantiates the model using the data specified when running the program
     public Model(Dataset dataset, Output output) {
@@ -175,13 +177,13 @@ public class Model {
         System.out.println();
 
         if (minError > 0F) {
-            System.out.println("Mean error: " + bold_red + meanError  + " > " + minError + reset_style);
+            System.out.println("Mean error: " + (meanError > minError ? greenbg : redbg) + meanError  + " > " + minError + reset_style);
         }
         System.out.println();
         if (earlyStop && epoch > 2) {
             System.out.println("Last two epoch's errors:");
-            System.out.println("\t" + bold_red + validationErrors.get(epoch) + " > " + validationErrors.get(epoch - 1) + reset_style);
-            System.out.println("\t" + bold_red + validationErrors.get(epoch - 1) + " > " + validationErrors.get(epoch - 2) + reset_style);
+            System.out.println("\t" + (validationErrors.get(epoch) < validationErrors.get(epoch - 1) ? greenbg : redbg) + validationErrors.get(epoch) + " < " + validationErrors.get(epoch - 1) + reset_style);
+            System.out.println("\t" + (validationErrors.get(epoch - 1) < validationErrors.get(epoch - 2) ? greenbg : redbg) + validationErrors.get(epoch - 1) + " < " + validationErrors.get(epoch - 2) + reset_style);
         }
     }
 }
