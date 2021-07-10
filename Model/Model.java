@@ -41,13 +41,14 @@ public class Model {
         output.printInitialParams(inputLayer, hiddenLayer, outputLayer, alpha);
         long startTime = System.currentTimeMillis();
 
+        boolean quit = false;
         int epoch = 0;
         Float meanError = 1F;
         List<Float> validationErrors = new ArrayList<>();
         List<Float> instantErrors = new ArrayList<>();
 
         //Iterates while stop conditions are not met (maximum number of epochs or the mean error)
-        while (epoch <= maxEpochs && meanError > minError) {
+        while (!quit && epoch <= maxEpochs && meanError > minError) {
             //Iterates through every data in the dataset and does the feedforward, backpropagation and update weights steps
             for (DataVector data : dataset.getTrainSet()) {
                 feedFoward(data);
@@ -71,7 +72,7 @@ public class Model {
                 if (epoch > 2
                         && validationErrors.get(epoch) > validationErrors.get(epoch - 1)
                         && validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2)) {
-                    break;
+                    quit = true;
                 }
             }
             if ((epoch % 10) == 0) {
@@ -80,8 +81,7 @@ public class Model {
 
             epoch++;
         }
-        if (epoch <= maxEpochs) printEpochInfo(epoch, meanError, minError, earlyStop, validationErrors);
-        System.out.println();
+        printEpochInfo(epoch - 1, meanError, minError, earlyStop, validationErrors);
 
         //Calculates the duration for the training
         long duration = System.currentTimeMillis() - startTime;
