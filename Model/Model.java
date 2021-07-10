@@ -80,13 +80,8 @@ public class Model {
 
             epoch++;
         }
-<<<<<<< HEAD
-||||||| parent of 98f821d ([+] Last-minute updates on the output)
-        System.out.println();
-=======
         if (epoch <= maxEpochs) printEpochInfo(epoch, meanError, minError, earlyStop, validationErrors);
         System.out.println();
->>>>>>> 98f821d ([+] Last-minute updates on the output)
 
         //Calculates the duration for the training
         long duration = System.currentTimeMillis() - startTime;
