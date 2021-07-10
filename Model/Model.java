@@ -28,6 +28,8 @@ public class Model {
     final String reset_style = "\033[m";
     final String bold_yellow = "\033[1;93m";
     final String bold_red = "\033[1;91m";
+    final String redbg = "\033[1;30;101m";
+    final String greenbg = "\033[1;30;102m";
 
     //Instantiates the model using the data specified when running the program
     public Model(Dataset dataset, Output output) {
@@ -171,12 +173,12 @@ public class Model {
 
     private void printEpochInfo(int epoch, float meanError, float minError, boolean earlyStop, List<Float> validationErrors) {
         clearScreen();
-        System.out.println("Epoch: " + bold_yellow + epoch + "/" + maxEpochs + reset_style);
+        System.out.println("Epoch: " + (epoch != maxEpochs ? greenbg : redbg) + epoch + "/" + maxEpochs + reset_style);
         System.out.println();
 
         if (minError > 0F) {
             String operator = meanError > minError ? " > " : " < ";
-            System.out.println("Mean error: " + bold_red + meanError  + operator + minError + reset_style);
+            System.out.println("Mean error: " + (meanError > minError ? greenbg : redbg) + meanError  + operator + minError + reset_style);
         }
         System.out.println();
         if (earlyStop && epoch > 2) {
@@ -184,8 +186,8 @@ public class Model {
             String operator2 = validationErrors.get(epoch - 1) > validationErrors.get(epoch - 2) ? " > " : " < ";
 
             System.out.println("Last two epoch's errors:");
-            System.out.println("\t" + bold_red + validationErrors.get(epoch) + operator1 + validationErrors.get(epoch - 1) + reset_style);
-            System.out.println("\t" + bold_red + validationErrors.get(epoch - 1) + operator2 + validationErrors.get(epoch - 2) + reset_style);
+            System.out.println("\t" + (validationErrors.get(epoch) < validationErrors.get(epoch - 1) ? greenbg : redbg) + validationErrors.get(epoch) + operator1 + validationErrors.get(epoch - 1) + reset_style);
+            System.out.println("\t" + (validationErrors.get(epoch - 1) < validationErrors.get(epoch - 2) ? greenbg : redbg) + validationErrors.get(epoch - 1) + operator2 + validationErrors.get(epoch - 2) + reset_style);
         }
     }
 }
